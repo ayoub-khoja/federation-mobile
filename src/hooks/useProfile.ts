@@ -1,22 +1,24 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { getApiUrl } from '../config/config';
 
 export interface UserProfile {
   id: number;
   first_name: string;
   last_name: string;
-  full_name: string;
   email: string;
   phone_number: string;
-  birth_date: string;
-  birth_place: string;
-  address: string;
   grade: string;
-  ligue_nom: string;
-  ligue_region: string;
-  niveau_competition: string;
-  license_number: string;
-  is_verified: boolean;
-  profile_photo: string;
+  birth_date?: string;
+  birth_place?: string;
+  ligue?: string;
+  ligue_nom?: string;
+  ligue_region?: string;
+  license_number?: string;
+  niveau_competition?: string;
+  is_verified?: boolean;
+  profile_photo?: string;
+  address?: string;
+  full_name?: string;
   date_joined: string;
 }
 
@@ -24,21 +26,6 @@ export const useProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Récupérer l'URL de base de l'API
-  const getBaseURL = () => {
-    if (typeof window !== 'undefined') {
-      const hostname = window.location.hostname;
-      const port = window.location.port;
-      
-      if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        return port === '3000' ? 'http://localhost:8000' : 'http://localhost:8000';
-      }
-      
-      return `https://${hostname}`;
-    }
-    return 'http://localhost:8000';
-  };
 
   // Récupérer le token d'authentification
   const getAuthToken = () => {
@@ -67,8 +54,7 @@ export const useProfile = () => {
 
     try {
       const token = getAuthToken();
-      const baseURL = getBaseURL();
-      const url = `${baseURL}/api/accounts/arbitres/profile/`;
+      const url = getApiUrl('/accounts/arbitres/profile/');
 
       const response = await fetch(url, {
         method: 'GET',
@@ -131,8 +117,7 @@ export const useProfile = () => {
 
     try {
       const token = getAuthToken();
-      const baseURL = getBaseURL();
-      const url = `${baseURL}/api/accounts/arbitres/profile/update/`;
+      const url = getApiUrl('/accounts/arbitres/profile/update/');
 
       const response = await fetch(url, {
         method: 'PUT',

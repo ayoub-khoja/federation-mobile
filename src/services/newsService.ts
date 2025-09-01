@@ -1,27 +1,9 @@
+import { getApiUrl } from '../config/config';
+
 class NewsService {
   private getBaseURL() {
-    // Détecter l'environnement
-    if (typeof window !== 'undefined') {
-      const { protocol, hostname } = window.location;
-      console.log('🌐 Environnement détecté:', { protocol, hostname });
-      
-      // Si on est sur localhost ou 127.0.0.1, utiliser localhost:8000
-      if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        const baseURL = 'http://localhost:8000';
-        console.log('🏠 URL de base (localhost):', baseURL);
-        return baseURL;
-      }
-      
-      // Sinon, utiliser l'IP du réseau
-      const baseURL = 'http://192.168.1.101:8000';
-      console.log('🏠 URL de base (IP réseau):', baseURL);
-      return baseURL;
-    }
-    
-    // Fallback pour SSR
-    const baseURL = 'http://localhost:8000';
-    console.log('🏠 URL de base (SSR fallback):', baseURL);
-    return baseURL;
+    // Utiliser la configuration unifiée
+    return getApiUrl('').replace('/api', '');
   }
 
   async getPublicNews(): Promise<NewsItem[]> {

@@ -2,6 +2,7 @@
  * Service d'authentification
  */
 import { ENVIRONMENT_CONFIG } from '../config/environment';
+import { getApiUrl } from '../config/config';
 
 export interface LoginCredentials {
   phoneNumber: string;
@@ -15,22 +16,13 @@ export interface LoginResponse {
     access: string;
     refresh: string;
   };
-  user?: {
-    id: number;
-    phone_number: string;
-    first_name: string;
-    last_name: string;
-    full_name: string;
-    grade: string;
-    league: string;
-    email?: string;
-  };
-  errors?: Record<string, string>;
+  user?: any;
+  errors?: any;
 }
 
 class AuthService {
   private get baseURL() {
-    return ENVIRONMENT_CONFIG.API.BASE_URL;
+    return getApiUrl(''); // Utilise la configuration unifiée
   }
 
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
@@ -77,14 +69,14 @@ class AuthService {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         return {
           success: false,
-          message: 'Impossible de se connecter au serveur. Vérifiez que le backend est démarré sur http://192.168.1.101:8000',
+          message: 'Impossible de se connecter au serveur. Vérifiez que le backend est démarré.',
           errors: { network: 'Connexion refusée' }
         };
       }
       
       return {
         success: false,
-        message: 'Erreur de connexion. Vérifiez que vous êtes connecté au même réseau WiFi et que le serveur est démarré.',
+        message: 'Erreur de connexion. Vérifiez votre connexion internet.',
         errors: { network: 'Erreur réseau' }
       };
     }

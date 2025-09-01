@@ -9,7 +9,7 @@ export const isDevelopment = () => {
 };
 
 // Fonction pour déterminer automatiquement l'URL de l'API selon l'environnement
-function getApiBaseUrl(): string {
+export function getApiBaseUrl(): string {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     

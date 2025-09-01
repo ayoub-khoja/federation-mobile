@@ -1,10 +1,13 @@
 /**
  * Configuration centralisée de l'API
+ * Configuration automatique pour local et production
  */
 
+import { getApiBaseUrl } from './environment';
+
 export const API_CONFIG = {
-  // URL de base de l'API - Utiliser localhost pour le développement
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+  // URL de base de l'API - Détection automatique selon l'environnement
+  BASE_URL: getApiBaseUrl(),
   
   // Endpoints d'authentification
   ENDPOINTS: {
@@ -13,6 +16,7 @@ export const API_CONFIG = {
     REGISTER: '/accounts/arbitres/register/',
     PROFILE: '/accounts/arbitres/profile/',
     REFRESH_TOKEN: '/accounts/token/refresh/',
+    PROFILE_UPDATE: '/accounts/arbitres/profile/update/',
   },
   
   // Configuration des requêtes
@@ -44,4 +48,29 @@ export const isDevelopment = (): boolean => {
 export const isMobile = (): boolean => {
   if (typeof window === 'undefined') return false;
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+// Fonction pour obtenir l'URL de base selon l'environnement
+export const getBaseUrl = (): string => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // Production sur Vercel
+    if (hostname === 'federation-mobile-front.vercel.app') {
+      return 'https://federation-backend.onrender.com';
+    }
+    
+    // Développement local
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:8000';
+    }
+    
+    // Autres environnements
+    return `https://${hostname}`;
+  }
+  
+  // Côté serveur
+  return process.env.NODE_ENV === 'production' 
+    ? 'https://federation-backend.onrender.com' 
+    : 'http://localhost:8000';
 };
