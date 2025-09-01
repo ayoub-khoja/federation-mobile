@@ -5,13 +5,17 @@ import MatchForm from './MatchForm';
 import MatchHistory from './MatchHistory';
 
 interface MatchFormData {
-  home_team: string;
-  away_team: string;
-  date: string;
-  time: string;
-  venue: string;
-  competition: string;
-  [key: string]: string;
+  matchType: string;
+  category: string;
+  stadium: string;
+  matchDate: string;
+  matchTime: string;
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: string;
+  awayScore: string;
+  description: string;
+  matchSheet: File | null;
 }
 
 interface MatchModuleProps {

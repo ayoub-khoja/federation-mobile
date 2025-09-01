@@ -6,6 +6,7 @@ import { HomeModule, ProfileModule, MatchModule, DesignationModule } from "../..
 import Header from "../../components/shared/Header";
 import BottomNavigation from "../../components/BottomNavigation";
 import { useAuthEvents } from "../../hooks/useAuthEvents";
+import type { MatchFormData } from "../../hooks/useMatchForm";
 
 
 import "../../services/tokenRefreshService"; // Démarrer le service de refresh automatique
@@ -85,7 +86,7 @@ export default function HomePage() {
               onAddMatchClick={handleAddMatchClick}
               onHistoryClick={handleHistoryClick}
               onCancelForm={handleCancelForm}
-              matchForm={matchForm}
+              matchForm={matchForm as any}
               onFormInputChange={handleFormInputChange}
               onFileUpload={handleFileUpload}
               onSubmitMatch={handleSubmitMatch}

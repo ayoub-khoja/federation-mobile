@@ -243,6 +243,7 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
 
         {/* Gestionnaire de notifications push */}
         <PushNotificationManager 
+          userId={profile.id || 0}
           isEnabled={pushNotificationsEnabled}
           onToggle={setPushNotificationsEnabled}
         />

@@ -15,6 +15,14 @@ interface TokenAnalysis {
   recommendations: string[];
 }
 
+interface JWTPayload {
+  exp?: number;
+  iat?: number;
+  user_id?: string;
+  sub?: string;
+  [key: string]: unknown;
+}
+
 class TokenDiagnosticService {
   /**
    * Analyser un token JWT en détail
@@ -49,7 +57,7 @@ class TokenDiagnosticService {
 
       // Décoder le payload
       try {
-        analysis.payload = JSON.parse(atob(parts[1]));
+        analysis.payload = JSON.parse(atob(parts[1])) as JWTPayload;
       } catch (_error) {
         analysis.issues.push('Impossible de décoder le payload JWT');
         return analysis;
@@ -64,10 +72,11 @@ class TokenDiagnosticService {
         if (!analysis.payload.exp) {
           analysis.issues.push('Champ "exp" (expiration) manquant dans le token');
         } else {
-          analysis.expiration = new Date(analysis.payload.exp * 1000);
+          const exp = analysis.payload.exp as number;
+          analysis.expiration = new Date(exp * 1000);
           const now = Math.floor(Date.now() / 1000);
-          analysis.timeUntilExpiry = analysis.payload.exp - now;
-          analysis.isExpired = analysis.payload.exp < now;
+          analysis.timeUntilExpiry = exp - now;
+          analysis.isExpired = exp < now;
         }
 
         if (!analysis.payload.user_id && !analysis.payload.sub) {
@@ -80,7 +89,9 @@ class TokenDiagnosticService {
 
         // Vérifier la durée de vie
         if (analysis.payload.iat && analysis.payload.exp) {
-          const tokenLifetime = analysis.payload.exp - analysis.payload.iat;
+          const exp = analysis.payload.exp as number;
+          const iat = analysis.payload.iat as number;
+          const tokenLifetime = exp - iat;
           const expectedLifetime = 24 * 60 * 60; // 24 heures en secondes
           
           if (tokenLifetime < expectedLifetime * 0.9) { // 10% de tolérance
@@ -90,7 +101,8 @@ class TokenDiagnosticService {
 
         // Vérifier l'horodatage
         if (analysis.payload.iat) {
-          const issuedAt = new Date(analysis.payload.iat * 1000);
+          const iat = analysis.payload.iat as number;
+          const issuedAt = new Date(iat * 1000);
           const now = new Date();
           const timeDiff = Math.abs(now.getTime() - issuedAt.getTime()) / 1000;
           

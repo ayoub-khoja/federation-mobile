@@ -10,30 +10,33 @@ interface BottomNavigationProps {
 export default function BottomNavigation({ activeTab, onTabChange }: BottomNavigationProps) {
   const { t, isRtl } = useTranslation('home');
 
+  // Cast de type pour les traductions
+  const homeT = t as {[key: string]: string};
+
   const navItems = [
     {
       key: 'home',
-      label: t.home,
+      label: homeT.home,
       icon: '🏠'
     },
     {
       key: 'profile',
-      label: t.profile,
+      label: homeT.profile,
       icon: '👤'
     },
     {
       key: 'matches',
-      label: t.matches,
+      label: homeT.matches,
       icon: '⚽'
     },
     {
       key: 'designations',
-      label: t.designations,
+      label: homeT.designations,
       icon: '🏆'
     },
     {
       key: 'logout',
-      label: t.logout,
+      label: homeT.logout,
       icon: '🚪'
     }
   ];

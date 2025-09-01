@@ -265,7 +265,7 @@ export default function RegisterPage() {
         title="Erreur lors de l'inscription"
         message={errors.submit || "Une erreur est survenue lors de la création de votre compte. Veuillez vérifier vos informations et réessayer."}
         buttonText="Réessayer"
-        errors={errors.details}
+        errors={errors}
       />
     </div>
   );

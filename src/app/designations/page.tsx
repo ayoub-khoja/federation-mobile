@@ -344,7 +344,7 @@ export default function DesignationsPage() {
                   className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
                 >
                   {isLoading('create') ? (
-                    <ButtonLoader size="sm" />
+                    <ButtonLoader />
                   ) : (
                     'Créer la désignation'
                   )}
