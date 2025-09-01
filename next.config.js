@@ -93,7 +93,7 @@ const nextConfig = {
       {
         source: '/api/:path*',
         destination: process.env.NODE_ENV === 'production'
-          ? 'https://votre-backend-production.com/api/:path*' // Remplacez par votre vrai backend
+          ? 'https://federation-backend.onrender.com/api/:path*'
           : 'http://localhost:8000/api/:path*',
       },
     ];

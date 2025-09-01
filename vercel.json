@@ -23,7 +23,7 @@
     },
     {
       "src": "/api/(.*)",
-      "dest": "https://votre-backend-production.com/api/$1"
+      "dest": "https://federation-backend.onrender.com/api/$1"
     }
   ],
   "env": {

@@ -3,6 +3,36 @@
  * Clés VAPID partagées avec le backend Django
  */
 
+// Fonction utilitaire pour vérifier si on est en développement
+export const isDevelopment = () => {
+  return process.env.NODE_ENV === 'development';
+};
+
+// Fonction pour déterminer automatiquement l'URL de l'API selon l'environnement
+function getApiBaseUrl(): string {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // Production sur Vercel
+    if (hostname === 'federation-mobile-front.vercel.app') {
+      return 'https://federation-backend.onrender.com/api';
+    }
+    
+    // Développement local
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:8000/api';
+    }
+    
+    // Autres environnements (staging, etc.)
+    return `https://${hostname}/api`;
+  }
+  
+  // Côté serveur - utiliser l'environnement local par défaut
+  return process.env.NODE_ENV === 'production' 
+    ? 'https://federation-backend.onrender.com/api' 
+    : 'http://localhost:8000/api';
+}
+
 export const ENVIRONMENT_CONFIG = {
       // Clés VAPID pour les notifications push (mêmes que backend)
     VAPID: {
@@ -37,31 +67,6 @@ export const ENVIRONMENT_CONFIG = {
   },
 };
 
-// Fonction pour déterminer automatiquement l'URL de l'API selon l'environnement
-function getApiBaseUrl(): string {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    
-    // Production sur Vercel
-    if (hostname === 'federation-mobile-front.vercel.app') {
-      return 'https://votre-backend-production.com/api'; // Remplacez par votre vrai backend de production
-    }
-    
-    // Développement local
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:8000/api';
-    }
-    
-    // Autres environnements (staging, etc.)
-    return `https://${hostname}/api`;
-  }
-  
-  // Côté serveur - utiliser l'environnement local par défaut
-  return process.env.NODE_ENV === 'production' 
-    ? 'https://votre-backend-production.com/api' 
-    : 'http://localhost:8000/api';
-}
-
 // Export de la clé publique VAPID pour Next.js
 export const NEXT_PUBLIC_VAPID_PUBLIC_KEY = ENVIRONMENT_CONFIG.VAPID.PUBLIC_KEY;
 
@@ -87,11 +92,6 @@ export const validateConfig = () => {
 // Fonction utilitaire pour obtenir l'URL complète d'un endpoint
 export const getApiUrl = (endpoint: string) => {
   return `${ENVIRONMENT_CONFIG.API.BASE_URL}${endpoint}`;
-};
-
-// Fonction utilitaire pour vérifier si on est en développement
-export const isDevelopment = () => {
-  return process.env.NODE_ENV === 'development';
 };
 
 // Fonction utilitaire pour logger en mode développement
