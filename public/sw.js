@@ -18,6 +18,10 @@ const urlsToCache = [
   '/designations'
 ];
 
+// Déterminer l'environnement
+const isProduction = self.location.hostname === 'federation-mobile-front.vercel.app';
+const isLocalhost = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
+
 // Installation du service worker
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -47,6 +51,19 @@ self.addEventListener('activate', (event) => {
 
 // Interception des requêtes réseau
 self.addEventListener('fetch', (event) => {
+  // Gérer les requêtes API différemment selon l'environnement
+  if (event.request.url.includes('/api/')) {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          // En cas d'échec, essayer de récupérer depuis le cache
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Pour les autres ressources, utiliser la stratégie cache-first
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -98,24 +115,18 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   console.log('👆 Notification cliquée:', event);
   
-  event.notification.close();
-  
   if (event.action === 'view') {
-    // Ouvrir l'application ou la page spécifique
-    const urlToOpen = event.notification.data.action_url || '/home';
-    
+    // Ouvrir l'application
     event.waitUntil(
-      clients.openWindow(urlToOpen)
+      clients.openWindow('/')
     );
   } else if (event.action === 'dismiss') {
-    // Notification fermée, rien à faire
-    console.log('❌ Notification fermée');
+    // Fermer la notification
+    event.notification.close();
   } else {
-    // Clic sur la notification principale
-    const urlToOpen = event.notification.data.action_url || '/home';
-    
+    // Action par défaut : ouvrir l'application
     event.waitUntil(
-      clients.openWindow(urlToOpen)
+      clients.openWindow('/')
     );
   }
 });
@@ -127,8 +138,6 @@ self.addEventListener('error', (event) => {
 
 // Gestion des messages du client
 self.addEventListener('message', (event) => {
-  console.log('📨 Message reçu du client:', event.data);
-  
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }

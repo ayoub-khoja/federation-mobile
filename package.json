@@ -6,8 +6,12 @@
     "dev": "next dev",
     "dev:mobile": "next dev --hostname 0.0.0.0 --port 3000",
     "build": "next build",
+    "build:prod": "NODE_ENV=production next build",
     "start": "next start",
-    "lint": "eslint"
+    "start:prod": "NODE_ENV=production next start",
+    "lint": "eslint",
+    "deploy:vercel": "vercel --prod",
+    "deploy:vercel:preview": "vercel"
   },
   "dependencies": {
     "autoprefixer": "^10.4.21",

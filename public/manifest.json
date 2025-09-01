@@ -62,5 +62,7 @@
     "notifications",
     "background-sync"
   ],
-  "gcm_sender_id": "103953800507"
+  "gcm_sender_id": "103953800507",
+  "related_applications": [],
+  "prefer_related_applications": false
 }

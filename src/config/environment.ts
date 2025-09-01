@@ -10,9 +10,9 @@ export const ENVIRONMENT_CONFIG = {
         // Note: La clé privée n'est pas exposée côté client
     },
   
-  // URL de l'API backend
+  // URL de l'API backend - Configuration automatique selon l'environnement
   API: {
-    BASE_URL: 'http://localhost:8000/api',
+    BASE_URL: getApiBaseUrl(),
     TIMEOUT: 10000,
   },
   
@@ -32,10 +32,35 @@ export const ENVIRONMENT_CONFIG = {
   
   // Mode de développement
   DEVELOPMENT: {
-    DEBUG: true,
-    LOG_LEVEL: 'debug',
+    DEBUG: isDevelopment(),
+    LOG_LEVEL: isDevelopment() ? 'debug' : 'info',
   },
 };
+
+// Fonction pour déterminer automatiquement l'URL de l'API selon l'environnement
+function getApiBaseUrl(): string {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // Production sur Vercel
+    if (hostname === 'federation-mobile-front.vercel.app') {
+      return 'https://votre-backend-production.com/api'; // Remplacez par votre vrai backend de production
+    }
+    
+    // Développement local
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:8000/api';
+    }
+    
+    // Autres environnements (staging, etc.)
+    return `https://${hostname}/api`;
+  }
+  
+  // Côté serveur - utiliser l'environnement local par défaut
+  return process.env.NODE_ENV === 'production' 
+    ? 'https://votre-backend-production.com/api' 
+    : 'http://localhost:8000/api';
+}
 
 // Export de la clé publique VAPID pour Next.js
 export const NEXT_PUBLIC_VAPID_PUBLIC_KEY = ENVIRONMENT_CONFIG.VAPID.PUBLIC_KEY;
@@ -74,6 +99,16 @@ export const devLog = (message: string, data?: unknown) => {
   if (isDevelopment()) {
     console.log(`[DEV] ${message}`, data || '');
   }
+};
+
+// Fonction utilitaire pour obtenir l'URL de base de l'application
+export const getAppBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  return process.env.NODE_ENV === 'production' 
+    ? 'https://federation-mobile-front.vercel.app' 
+    : 'http://localhost:3000';
 };
 
 
