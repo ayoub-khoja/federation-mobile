@@ -1,3 +1,5 @@
+import { getApiUrl } from '../config/config';
+
 /**
  * Service de diagnostic avancé des tokens JWT
  * Analyse en détail la structure et la validité des tokens
@@ -256,7 +258,8 @@ class TokenDiagnosticService {
     error?: string;
   }> {
     try {
-      const response = await fetch('http://localhost:8000/api/accounts/arbitres/profile/', {
+      const url = getApiUrl('/accounts/arbitres/profile/');
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

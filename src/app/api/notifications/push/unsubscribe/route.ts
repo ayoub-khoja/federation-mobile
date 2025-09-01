@@ -24,8 +24,13 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.split(' ')[1];
 
-    // Envoyer la demande de désabonnement au backend Django
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/accounts/push/unsubscribe/`, {
+    // Configuration automatique selon l'environnement
+    const backendUrl = process.env.NODE_ENV === 'production'
+      ? 'https://federation-backend.onrender.com/api'
+      : 'http://localhost:8000/api';
+
+    // Envoyer la requête de désabonnement au backend Django
+    const response = await fetch(`${backendUrl}/accounts/push/unsubscribe/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

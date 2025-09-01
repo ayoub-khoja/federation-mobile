@@ -17,7 +17,13 @@ export default function Step2ProfessionalInfo({
   errors, 
   isRtl = false 
 }: Step2ProfessionalInfoProps) {
-  const { liguesOptions, isLoading: liguesLoading, error: liguesError } = useLigues();
+  const { ligues, loading: liguesLoading, error: liguesError } = useLigues();
+
+  // Créer les options pour le select
+  const liguesOptions = ligues.map(ligue => ({
+    value: ligue.code || ligue.id.toString(),
+    label: `${ligue.nom} (${ligue.region})`
+  }));
 
   return (
     <div className="space-y-6">

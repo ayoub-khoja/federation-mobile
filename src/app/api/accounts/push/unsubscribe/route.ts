@@ -8,8 +8,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Token d\'authentification manquant' }, { status: 401 });
     }
 
+    // Configuration automatique selon l'environnement
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? 'https://federation-backend.onrender.com'
+      : 'http://localhost:8000';
+
     // Récupérer l'endpoint actuel depuis le statut
-    const statusResponse = await fetch('http://localhost:8000/api/accounts/push/status/', {
+    const statusResponse = await fetch(`${baseUrl}/api/accounts/push/status/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -37,7 +42,7 @@ export async function POST(request: NextRequest) {
     // Désactiver tous les abonnements actifs
     const results = [];
     for (const subscription of activeSubscriptions) {
-      const response = await fetch('http://localhost:8000/api/accounts/push/unsubscribe/', {
+      const response = await fetch(`${baseUrl}/api/accounts/push/unsubscribe/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

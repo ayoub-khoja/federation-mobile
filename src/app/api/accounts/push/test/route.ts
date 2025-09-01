@@ -13,8 +13,10 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.split(' ')[1];
 
-    // Envoyer la requête de test au backend Django
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    // Configuration automatique selon l'environnement
+    const backendUrl = process.env.NODE_ENV === 'production'
+      ? 'https://federation-backend.onrender.com/api'
+      : 'http://localhost:8000/api';
     console.log('🧪 Test des notifications push - Connexion au backend:', backendUrl);
     
     try {

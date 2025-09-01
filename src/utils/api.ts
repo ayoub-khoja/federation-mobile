@@ -1,14 +1,18 @@
 /**
- * Configuration et utilitaires pour l'API Backend Django
+ * Utilitaires pour l'API
  */
 
-// Configuration de base avec détection mobile
-const getApiBaseUrl = () => {
-  // Utiliser localhost pour tous les cas pour éviter les problèmes de réseau
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+import { getApiUrl } from '../config/config';
+
+// Fonction pour obtenir l'URL de base de l'API
+export const getApiBaseUrl = (): string => {
+  return getApiUrl('').replace('/api', '');
 };
 
-const API_BASE_URL = getApiBaseUrl();
+// Fonction pour obtenir l'URL complète d'un endpoint
+export const getFullApiUrl = (endpoint: string): string => {
+  return getApiUrl(endpoint);
+};
 
 // Types pour l'authentification
 export interface LoginData {
@@ -93,7 +97,7 @@ export class TokenManager {
 export class ApiClient {
   private baseURL: string;
 
-  constructor(baseURL: string = API_BASE_URL) {
+  constructor(baseURL: string = getApiBaseUrl()) {
     this.baseURL = baseURL;
   }
 

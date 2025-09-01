@@ -240,8 +240,8 @@ export const useRegistration = () => {
         formData.append('profile_photo', registrationData.personalInfo.profilePhoto);
       }
 
-      // Configuration de l'URL API (mobile/desktop)
-      const getApiUrl = () => {
+      // Configuration de l'URL de base
+      const getBaseURL = () => {
         if (typeof window !== 'undefined') {
           const hostname = window.location.hostname;
           if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
@@ -252,7 +252,7 @@ export const useRegistration = () => {
       };
 
       // Appel à l'API Django avec FormData
-      const response = await fetch(`${getApiUrl()}/accounts/arbitres/register/`, {
+      const response = await fetch(`${getBaseURL()}/accounts/arbitres/register/`, {
         method: 'POST',
         // Ne pas définir Content-Type pour FormData, le navigateur le fera automatiquement
         body: formData
