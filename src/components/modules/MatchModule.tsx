@@ -14,6 +14,7 @@ interface MatchFormData {
   awayTeam: string;
   homeScore: string;
   awayScore: string;
+  role: string;
   description: string;
   matchSheet: File | null;
 }
