@@ -35,9 +35,9 @@ export default function BottomNavigation({ activeTab, onTabChange }: BottomNavig
       icon: '🏆'
     },
     {
-      key: 'logout',
-      label: homeT.logout,
-      icon: '🚪'
+      key: 'notifications',
+      label: homeT.notifications,
+      icon: '🔔'
     }
   ];
 

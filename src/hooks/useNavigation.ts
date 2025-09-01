@@ -16,8 +16,9 @@ export const useNavigation = () => {
   };
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'logout') {
-      handleLogout();
+    if (tab === 'notifications') {
+      // Gérer les notifications - pour l'instant, juste changer l'onglet
+      setActiveTab(tab);
     } else {
       setActiveTab(tab);
     }

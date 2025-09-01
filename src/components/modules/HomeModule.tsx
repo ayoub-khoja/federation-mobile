@@ -15,19 +15,7 @@ export default function HomeModule({ isRtl, homeT, language = 'fr' }: HomeModule
   const { featured, regular } = getNewsByStatus();
   
   // Composant de débogage
-  const DebugInfo = () => (
-    <div className="glass rounded-3xl shadow-ftf overflow-hidden animate-fadeInUp mb-4">
-      <div className="p-4 text-left text-xs bg-black/20 text-white">
-        <h4 className="font-bold mb-2">🐛 Debug Info:</h4>
-        <div>Loading: {loading ? 'true' : 'false'}</div>
-        <div>Error: {error || 'null'}</div>
-        <div>News count: {news.length}</div>
-        <div>Featured count: {featured.length}</div>
-        <div>Regular count: {regular.length}</div>
-        <div>Language: {language}</div>
-      </div>
-    </div>
-  );
+  
 
   return (
     <>
@@ -40,7 +28,6 @@ export default function HomeModule({ isRtl, homeT, language = 'fr' }: HomeModule
       </div>
 
       {/* Debug Info - À retirer après résolution */}
-      <DebugInfo />
 
       <div className="space-y-8">
         {/* États de chargement et d'erreur */}

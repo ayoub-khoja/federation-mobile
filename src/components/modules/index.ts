@@ -5,3 +5,4 @@ export { default as MatchModule } from './MatchModule';
 export { default as MatchForm } from './MatchForm';
 export { default as MatchHistory } from './MatchHistory';
 export { default as DesignationModule } from './DesignationModule';
+export { default as NotificationModule } from './NotificationModule';

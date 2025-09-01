@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslation, useNavigation, useMatchForm } from "../../hooks";
-import { HomeModule, ProfileModule, MatchModule, DesignationModule } from "../../components/modules";
+import { HomeModule, ProfileModule, MatchModule, DesignationModule, NotificationModule } from "../../components/modules";
 import Header from "../../components/shared/Header";
 import BottomNavigation from "../../components/BottomNavigation";
 import { useAuthEvents } from "../../hooks/useAuthEvents";
@@ -95,6 +95,13 @@ export default function HomePage() {
 
           {activeTab === 'designations' && (
             <DesignationModule
+              isRtl={isRtl}
+              homeT={homeT}
+            />
+          )}
+
+          {activeTab === 'notifications' && (
+            <NotificationModule
               isRtl={isRtl}
               homeT={homeT}
             />

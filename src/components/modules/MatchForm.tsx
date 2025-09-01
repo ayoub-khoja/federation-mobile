@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { useMatchData } from '../../hooks/useMatchData';
 
 interface MatchFormProps {
   isRtl: boolean;
@@ -15,6 +16,7 @@ interface MatchFormProps {
     awayTeam: string;
     homeScore: string;
     awayScore: string;
+    role: string;
     description: string;
     matchSheet: File | null;
   };
@@ -33,6 +35,47 @@ export default function MatchForm({
   onSubmitMatch,
   onCancelForm
 }: MatchFormProps) {
+  const { matchTypes, matchCategories, isLoading, error } = useMatchData();
+
+  // Affichage du loading
+  if (isLoading) {
+    return (
+      <div className="glass rounded-3xl shadow-ftf overflow-hidden animate-fadeInUp">
+        <div className="p-6">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Chargement des données...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Affichage de l'erreur
+  if (error) {
+    return (
+      <div className="glass rounded-3xl shadow-ftf overflow-hidden animate-fadeInUp">
+        <div className="p-6">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="text-red-600 text-4xl mb-4">⚠️</div>
+              <p className="text-red-600 mb-4">Erreur lors du chargement des données</p>
+              <p className="text-gray-600 text-sm mb-4">{error}</p>
+              <button
+                onClick={onCancelForm}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Retour
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="glass rounded-3xl shadow-ftf overflow-hidden animate-fadeInUp">
       <div className="p-6">
@@ -63,13 +106,12 @@ export default function MatchForm({
                   className={`w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors text-gray-700 ${isRtl ? 'text-right font-arabic' : 'text-left'}`}
                   required
                 >
-                  <option value="">Sélectionner...</option>
-                  <option value="ligue1">{homeT.ligue1}</option>
-                  <option value="ligue2">{homeT.ligue2}</option>
-                  <option value="c1">{homeT.c1}</option>
-                  <option value="c2">{homeT.c2}</option>
-                  <option value="youth">{homeT.youth}</option>
-                  <option value="regional">{homeT.regional}</option>
+                  <option value="">Sélectionner un type de match...</option>
+                  {matchTypes.map((type) => (
+                    <option key={type.id} value={type.id.toString()}>
+                      {type.nom} ({type.code})
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -84,13 +126,12 @@ export default function MatchForm({
                   className={`w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors text-gray-700 ${isRtl ? 'text-right font-arabic' : 'text-left'}`}
                   required
                 >
-                  <option value="">Sélectionner...</option>
-                  <option value="senior">{homeT.senior}</option>
-                  <option value="u21">{homeT.u21}</option>
-                  <option value="junior">{homeT.junior}</option>
-                  <option value="cadets">{homeT.cadets}</option>
-                  <option value="minimes">{homeT.minimes}</option>
-                  <option value="school">{homeT.school}</option>
+                  <option value="">Sélectionner une catégorie...</option>
+                  {matchCategories.map((category) => (
+                    <option key={category.id} value={category.id.toString()}>
+                      {category.nom} ({category.age_min}-{category.age_max} ans)
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -199,6 +240,27 @@ export default function MatchForm({
                   placeholder="0"
                 />
               </div>
+            </div>
+
+            {/* Rôle */}
+            <div>
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+                Rôle dans le match
+              </label>
+              <select
+                value={matchForm.role}
+                onChange={(e) => onFormInputChange('role', e.target.value)}
+                className={`w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors text-gray-700 ${isRtl ? 'text-right font-arabic' : 'text-left'}`}
+                required
+              >
+                <option value="arbitre_principal">Arbitre Principal</option>
+                <option value="arbitre_assistant">Arbitre Assistant</option>
+                <option value="arbitre_quatrieme">Arbitre Quatrième</option>
+                <option value="arbitre_var">Arbitre VAR</option>
+                <option value="observateur">Observateur</option>
+                <option value="delegue">Délégué</option>
+                <option value="commissaire">Commissaire</option>
+              </select>
             </div>
 
             {/* Description */}
