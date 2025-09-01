@@ -1,23 +1,6 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Amiri } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegistration } from "../components/ServiceWorkerRegistration";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-});
-
-const amiri = Amiri({
-  variable: "--font-amiri",
-  subsets: ["arabic", "latin"],
-  weight: ["400", "700"],
-});
 
 export const metadata: Metadata = {
   title: "Direction Nationale de l'Arbitrage - FTF",
@@ -31,9 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body
-        className={`${inter.variable} ${jetbrainsMono.variable} ${amiri.variable} antialiased`}
-      >
+      <body className="antialiased font-sans">
         {children}
         <ServiceWorkerRegistration />
       </body>

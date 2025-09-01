@@ -98,6 +98,11 @@ const nextConfig = {
       },
     ];
   },
+  
+  // Configuration pour éviter les erreurs de polices
+  experimental: {
+    optimizeFonts: false,
+  },
 };
 
 module.exports = nextConfig;
