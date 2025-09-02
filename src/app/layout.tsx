@@ -27,10 +27,12 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
-        <link rel="icon" type="image/png" sizes="32x32" href="/ftf-logo.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/ftf-logo.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/ftf-logo.png" />
-        <link rel="shortcut icon" href="/ftf-logo.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/ftf-logo.png?v=2" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/ftf-logo.png?v=2" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/ftf-logo.png?v=2" />
+        <link rel="shortcut icon" href="/ftf-logo.png?v=2" />
+        <link rel="icon" href="/favicon.ico?v=2" />
+        <meta name="theme-color" content="#dc2626" />
       </head>
       <body className="antialiased font-sans">
         {children}
