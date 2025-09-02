@@ -4,7 +4,11 @@ import { getApiUrl } from '../config/config';
 export interface Ligue {
   id: number;
   nom: string;
-  region: string;
+  description?: string;
+  is_active: boolean;
+  date_creation: string;
+  ordre: number;
+  region?: string;
   code?: string;
 }
 
@@ -18,7 +22,7 @@ export const useLigues = () => {
       setLoading(true);
       setError(null);
       
-      const url = getApiUrl('/ligues/');
+      const url = getApiUrl('/accounts/ligues/');
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -26,7 +30,16 @@ export const useLigues = () => {
       }
       
       const data = await response.json();
-      setLigues(data);
+      
+      // Gérer la structure de réponse de l'API
+      if (data.success && data.ligues) {
+        setLigues(data.ligues);
+      } else if (Array.isArray(data)) {
+        // Fallback si la réponse est directement un tableau
+        setLigues(data);
+      } else {
+        throw new Error('Format de réponse inattendu');
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des ligues';
       setError(errorMessage);

@@ -1,7 +1,7 @@
 {
-  "name": "Louvre PWA - Système d'Arbitrage",
-  "short_name": "Louvre PWA",
-  "description": "Application PWA pour la gestion des arbitres et des désignations",
+  "name": "FTF - Système d'Arbitrage",
+  "short_name": "FTF Arbitrage",
+  "description": "Application officielle de la Fédération Tunisienne de Football pour la gestion des arbitres et des désignations",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#dc2626",
@@ -12,13 +12,13 @@
   "categories": ["sports", "business", "productivity"],
   "icons": [
     {
-      "src": "/cartons.png",
+      "src": "/ftf-logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/cartons.png",
+      "src": "/ftf-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -32,7 +32,7 @@
       "url": "/profile",
       "icons": [
         {
-          "src": "/cartons.png",
+          "src": "/ftf-logo.png",
           "sizes": "96x96"
         }
       ]
@@ -44,7 +44,7 @@
       "url": "/designations",
       "icons": [
         {
-          "src": "/cartons.png",
+          "src": "/ftf-logo.png",
           "sizes": "96x96"
         }
       ]
@@ -52,7 +52,7 @@
   ],
   "screenshots": [
     {
-      "src": "/cartons.png",
+      "src": "/ftf-logo.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide"

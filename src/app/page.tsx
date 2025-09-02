@@ -39,8 +39,8 @@ export default function LoginPage() {
     }
 
     // Vérification du format du numéro de téléphone
-    if (!phone.startsWith('+216') || phone.length !== 12) {
-      showError(language === 'fr' ? "Le numéro doit contenir 8 chiffres" : "يجب أن يحتوي الرقم على 8 أرقام");
+    if (!/^\+216\d{8}$/.test(phone)) {
+      showError(language === 'fr' ? "Le numéro doit être au format +216XXXXXXXX" : "يجب أن يكون الرقم بصيغة +216XXXXXXXX");
       return;
     }
 
@@ -48,6 +48,11 @@ export default function LoginPage() {
     setLoading('login', true);
     
     try {
+      console.log('🔍 Page de connexion - Données envoyées:', {
+        phone: phone,
+        password: password ? '***' : 'vide'
+      });
+      
       const result = await authService.login({
         phoneNumber: phone,
         password: password
@@ -163,25 +168,35 @@ export default function LoginPage() {
                   <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRtl ? 'font-arabic text-right' : 'text-left'}`}>
                     {language === 'fr' ? 'Numéro de téléphone' : 'رقم الهاتف'}
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <span className="text-lg">🇹🇳</span>
-                      <span className="ml-1 text-gray-600 font-medium">+216</span>
-                    </div>
-                    <input
-                      type="tel"
-                      placeholder={language === 'fr' ? '12 345 678' : '12 345 678'}
-                      value={phone.replace('+216', '')}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '');
-                        setPhone('+216' + value);
-                      }}
-                      className={`w-full pl-20 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors text-gray-700 placeholder-gray-400 ${isRtl ? 'text-right font-arabic' : 'text-left'}`}
-                      required
-                      maxLength={8}
-                      dir="ltr"
-                    />
-                  </div>
+                  <input
+                    type="tel"
+                    placeholder="+21612345678"
+                    value={phone}
+                    onChange={(e) => {
+                      // Auto-formater le numéro de téléphone (même logique que l'inscription)
+                      let formattedValue = e.target.value.replace(/\D/g, ''); // Supprimer tous les non-chiffres
+                      
+                      if (formattedValue.length > 0 && !formattedValue.startsWith('216')) {
+                        if (formattedValue.length <= 8) {
+                          formattedValue = '216' + formattedValue;
+                        }
+                      }
+                      
+                      if (formattedValue.length > 11) {
+                        formattedValue = formattedValue.substring(0, 11);
+                      }
+                      
+                      const finalValue = formattedValue.length > 0 ? '+' + formattedValue : '';
+                      setPhone(finalValue);
+                    }}
+                    className={`w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors text-gray-700 placeholder-gray-400 ${isRtl ? 'text-right font-arabic' : 'text-left'}`}
+                    required
+                    maxLength={12}
+                    dir="ltr"
+                  />
+                  <p className="text-gray-500 text-xs mt-1">
+                    Format: +216XXXXXXXX (numéro tunisien)
+                  </p>
                 </div>
 
                 {/* Champ Mot de passe */}

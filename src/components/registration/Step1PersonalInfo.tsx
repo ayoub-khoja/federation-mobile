@@ -8,6 +8,12 @@ interface Step1PersonalInfoProps {
   data: PersonalInfo;
   onChange: (data: Partial<PersonalInfo>) => void;
   errors: {[key: string]: string};
+  phoneVerification?: {
+    isVerifying: boolean;
+    isVerified: boolean;
+    message: string;
+    exists: boolean;
+  };
   isRtl?: boolean;
 }
 
@@ -15,6 +21,7 @@ export default function Step1PersonalInfo({
   data, 
   onChange, 
   errors, 
+  phoneVerification,
   isRtl = false 
 }: Step1PersonalInfoProps) {
   
@@ -100,21 +107,66 @@ export default function Step1PersonalInfo({
           <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
             Numéro de téléphone *
           </label>
-          <input
-            type="tel"
-            value={data.phoneNumber}
-            onChange={(e) => handlePhoneChange(e.target.value)}
-            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors text-gray-700 ${
-              errors.phoneNumber 
-                ? 'border-red-500 focus:border-red-500' 
-                : 'border-gray-200 focus:border-red-500'
-            } ${isRtl ? 'text-right font-arabic' : 'text-left'}`}
-            placeholder="+21612345678"
-            dir="ltr"
-          />
-          {errors.phoneNumber && (
+          <div className="relative">
+            <input
+              type="tel"
+              value={data.phoneNumber}
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors text-gray-700 ${
+                errors.phoneNumber 
+                  ? 'border-red-500 focus:border-red-500' 
+                  : phoneVerification?.isVerified && !phoneVerification.exists
+                  ? 'border-green-500 focus:border-green-500'
+                  : phoneVerification?.isVerified && phoneVerification.exists
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-gray-200 focus:border-red-500'
+              } ${isRtl ? 'text-right font-arabic' : 'text-left'}`}
+              placeholder="+21612345678"
+              dir="ltr"
+            />
+            
+            {/* Indicateur de vérification */}
+            {phoneVerification?.isVerifying && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+              </div>
+            )}
+            
+            {phoneVerification?.isVerified && !phoneVerification.exists && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <span className="text-green-500 text-lg">✅</span>
+              </div>
+            )}
+            
+            {phoneVerification?.isVerified && phoneVerification.exists && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <span className="text-red-500 text-lg">❌</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Messages d'erreur - seulement si pas de vérification positive */}
+          {errors.phoneNumber && !(phoneVerification?.isVerified && !phoneVerification.exists) && (
             <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
           )}
+          
+          {/* Messages de vérification */}
+          {phoneVerification?.isVerified && phoneVerification.message && (
+            <p className={`text-sm mt-1 ${
+              phoneVerification.exists 
+                ? 'text-red-600' 
+                : 'text-green-600'
+            }`}>
+              {phoneVerification.exists ? '❌' : '✅'} {phoneVerification.message}
+            </p>
+          )}
+          
+          {phoneVerification?.isVerifying && (
+            <p className="text-blue-600 text-sm mt-1">
+              🔄 Vérification du numéro en cours...
+            </p>
+          )}
+          
           <p className="text-gray-500 text-xs mt-1">
             Format: +216XXXXXXXX (numéro tunisien)
           </p>

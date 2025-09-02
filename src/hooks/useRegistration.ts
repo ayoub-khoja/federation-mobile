@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { verifyPhoneNumber, PhoneVerificationResponse } from '../services/phoneVerificationService';
 
 // Types pour les données d'inscription
 export interface PersonalInfo {
@@ -15,6 +16,7 @@ export interface ProfessionalInfo {
   grade: string;
   dateNaissance: string; // Date de naissance au format YYYY-MM-DD
   lieuNaissance: string; // Lieu de naissance
+  role: string; // Rôle: 'arbitre' ou 'assistant'
 }
 
 export interface SecurityInfo {
@@ -44,6 +46,11 @@ export const GRADES = [
   { value: 'federale', label: 'Fédérale' }
 ];
 
+export const ROLES = [
+  { value: 'arbitre', label: 'Arbitre' },
+  { value: 'assistant', label: 'Assistant Arbitre' }
+];
+
 // Données initiales
 const initialPersonalInfo: PersonalInfo = {
   firstName: '',
@@ -58,7 +65,8 @@ const initialProfessionalInfo: ProfessionalInfo = {
   ligueCode: '',
   grade: '',
   dateNaissance: '',
-  lieuNaissance: ''
+  lieuNaissance: '',
+  role: ''
 };
 
 const initialSecurityInfo: SecurityInfo = {
@@ -70,6 +78,17 @@ export const useRegistration = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [phoneVerification, setPhoneVerification] = useState<{
+    isVerifying: boolean;
+    isVerified: boolean;
+    message: string;
+    exists: boolean;
+  }>({
+    isVerifying: false,
+    isVerified: false,
+    message: '',
+    exists: false
+  });
   
   const [registrationData, setRegistrationData] = useState<RegistrationData>({
     personalInfo: initialPersonalInfo,
@@ -77,12 +96,55 @@ export const useRegistration = () => {
     securityInfo: initialSecurityInfo
   });
 
+  // Vérifier le numéro de téléphone
+  const verifyPhone = useCallback(async (phoneNumber: string) => {
+    if (!phoneNumber || !/^\+216\d{8}$/.test(phoneNumber)) {
+      setPhoneVerification({
+        isVerifying: false,
+        isVerified: false,
+        message: '',
+        exists: false
+      });
+      return;
+    }
+
+    setPhoneVerification(prev => ({ ...prev, isVerifying: true }));
+
+    try {
+      const result = await verifyPhoneNumber(phoneNumber);
+      
+      if (result.success) {
+        setPhoneVerification({
+          isVerifying: false,
+          isVerified: true,
+          message: result.message,
+          exists: result.exists
+        });
+      } else {
+        setPhoneVerification({
+          isVerifying: false,
+          isVerified: false,
+          message: result.message,
+          exists: false
+        });
+      }
+    } catch (error) {
+      setPhoneVerification({
+        isVerifying: false,
+        isVerified: false,
+        message: 'Erreur lors de la vérification',
+        exists: false
+      });
+    }
+  }, []);
+
   // Mettre à jour les informations personnelles
   const updatePersonalInfo = useCallback((data: Partial<PersonalInfo>) => {
     setRegistrationData(prev => ({
       ...prev,
       personalInfo: { ...prev.personalInfo, ...data }
     }));
+    
     // Effacer les erreurs liées aux champs modifiés
     const fieldsToClean = Object.keys(data);
     setErrors(prev => {
@@ -90,7 +152,30 @@ export const useRegistration = () => {
       fieldsToClean.forEach(field => delete newErrors[field]);
       return newErrors;
     });
-  }, []);
+
+    // Vérifier le numéro de téléphone si c'est le champ qui a changé
+    if (data.phoneNumber !== undefined) {
+      // Réinitialiser la vérification seulement si le numéro a changé
+      setPhoneVerification(prev => ({
+        ...prev,
+        isVerifying: false,
+        isVerified: false,
+        message: '',
+        exists: false
+      }));
+      
+      // Vérifier le numéro après un délai (debounce) seulement si le format est correct
+      if (data.phoneNumber && /^\+216\d{8}$/.test(data.phoneNumber)) {
+        const timeoutId = setTimeout(() => {
+          if (data.phoneNumber) {
+            verifyPhone(data.phoneNumber);
+          }
+        }, 1000);
+        
+        return () => clearTimeout(timeoutId);
+      }
+    }
+  }, [verifyPhone]);
 
   // Mettre à jour les informations professionnelles
   const updateProfessionalInfo = useCallback((data: Partial<ProfessionalInfo>) => {
@@ -136,6 +221,14 @@ export const useRegistration = () => {
           newErrors.phoneNumber = 'Le numéro de téléphone est requis';
         } else if (!/^\+216\d{8}$/.test(phoneNumber)) {
           newErrors.phoneNumber = 'Format: +216XXXXXXXX';
+        } else if (phoneVerification.isVerifying) {
+          newErrors.phoneNumber = 'Vérification du numéro en cours...';
+        } else if (phoneVerification.isVerified && phoneVerification.exists) {
+          newErrors.phoneNumber = 'Ce numéro de téléphone est déjà utilisé';
+        } else if (phoneVerification.isVerified && !phoneVerification.exists) {
+          // Numéro vérifié et disponible - pas d'erreur
+        } else if (phoneNumber.length === 12 && !phoneVerification.isVerified && !phoneVerification.isVerifying) {
+          newErrors.phoneNumber = 'Veuillez attendre la vérification du numéro';
         }
         if (!email.trim()) {
           newErrors.email = 'L\'email est requis';
@@ -146,10 +239,11 @@ export const useRegistration = () => {
         break;
 
       case 2: // Informations professionnelles
-        const { ligueCode, grade, dateNaissance, lieuNaissance } = registrationData.professionalInfo;
+        const { ligueCode, grade, dateNaissance, lieuNaissance, role } = registrationData.professionalInfo;
         
         if (!ligueCode) newErrors.ligueCode = 'Veuillez sélectionner une ligue';
         if (!grade) newErrors.grade = 'Veuillez sélectionner un grade';
+        if (!role) newErrors.role = 'Veuillez sélectionner un rôle';
         if (!dateNaissance.trim()) {
           newErrors.dateNaissance = 'La date de naissance est requise';
         } else {
@@ -223,15 +317,16 @@ export const useRegistration = () => {
       const formData = new FormData();
       
       // Ajouter les champs texte
-      formData.append('phone_number', registrationData.personalInfo.phoneNumber);
+      formData.append('phone_number', registrationData.personalInfo.phoneNumber); // Garder le numéro avec le préfixe +216
       formData.append('first_name', registrationData.personalInfo.firstName);
       formData.append('last_name', registrationData.personalInfo.lastName);
       formData.append('email', registrationData.personalInfo.email);
       formData.append('address', registrationData.personalInfo.address);
-      formData.append('ligue_id', '2'); // ID de la ligue (2 pour Ligue de Tunis, 22 pour Ligue 1, etc.)
+      formData.append('ligue_id', registrationData.professionalInfo.ligueCode); // Utiliser le code de la ligue sélectionnée
       formData.append('grade', registrationData.professionalInfo.grade);
       formData.append('birth_date', registrationData.professionalInfo.dateNaissance);
       formData.append('birth_place', registrationData.professionalInfo.lieuNaissance);
+      formData.append('role', registrationData.professionalInfo.role);
       formData.append('password', registrationData.securityInfo.password);
       formData.append('password_confirm', registrationData.securityInfo.confirmPassword);
       
@@ -336,6 +431,12 @@ export const useRegistration = () => {
     setCurrentStep(1);
     setErrors({});
     setIsLoading(false);
+    setPhoneVerification({
+      isVerifying: false,
+      isVerified: false,
+      message: '',
+      exists: false
+    });
   }, []);
 
   return {
@@ -344,6 +445,7 @@ export const useRegistration = () => {
     registrationData,
     errors,
     isLoading,
+    phoneVerification,
     
     // Actions de mise à jour
     updatePersonalInfo,
@@ -359,6 +461,9 @@ export const useRegistration = () => {
     validateStep,
     submitRegistration,
     resetRegistration,
+    
+    // Vérification téléphone
+    verifyPhone,
     
     // Helpers
     isStepValid: (step: number) => validateStep(step),

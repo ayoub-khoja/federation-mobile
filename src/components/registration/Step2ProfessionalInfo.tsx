@@ -1,29 +1,32 @@
 "use client";
 
 import React from 'react';
-import { ProfessionalInfo, GRADES } from '../../hooks/useRegistration';
+import { ProfessionalInfo, GRADES, ROLES } from '../../hooks/useRegistration';
 import { useLigues } from '../../hooks/useLigues';
 
 interface Step2ProfessionalInfoProps {
   data: ProfessionalInfo;
-  onChange: (data: Partial<ProfessionalInfo>) => void;
+  onChangeAction: (data: Partial<ProfessionalInfo>) => void;
   errors: {[key: string]: string};
   isRtl?: boolean;
 }
 
 export default function Step2ProfessionalInfo({ 
   data, 
-  onChange, 
+  onChangeAction, 
   errors, 
   isRtl = false 
 }: Step2ProfessionalInfoProps) {
-  const { ligues, loading: liguesLoading, error: liguesError } = useLigues();
+  const { ligues, loading: liguesLoading, error: liguesError, refetch } = useLigues();
 
-  // Créer les options pour le select
-  const liguesOptions = ligues.map(ligue => ({
-    value: ligue.code || ligue.id.toString(),
-    label: `${ligue.nom} (${ligue.region})`
-  }));
+  // Créer les options pour le select - seulement les ligues actives
+  const liguesOptions = ligues
+    .filter(ligue => ligue.is_active) // Filtrer seulement les ligues actives
+    .sort((a, b) => a.ordre - b.ordre) // Trier par ordre
+    .map(ligue => ({
+      value: ligue.id.toString(),
+      label: `${ligue.nom}${ligue.description ? ` - ${ligue.description}` : ''}`
+    }));
 
   return (
     <div className="space-y-6">
@@ -42,6 +45,36 @@ export default function Step2ProfessionalInfo({
 
       {/* Formulaire */}
       <div className="space-y-6">
+        {/* Rôle */}
+        <div>
+          <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+            Rôle *
+          </label>
+          <select
+            value={data.role}
+            onChange={(e) => onChangeAction({ role: e.target.value })}
+            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors text-gray-700 bg-white ${
+              errors.role 
+                ? 'border-red-500 focus:border-red-500' 
+                : 'border-gray-200 focus:border-red-500'
+            } ${isRtl ? 'text-right font-arabic' : 'text-left'}`}
+            dir={isRtl ? 'rtl' : 'ltr'}
+          >
+            <option value="">Sélectionnez votre rôle</option>
+            {ROLES.map((role) => (
+              <option key={role.value} value={role.value}>
+                {role.label}
+              </option>
+            ))}
+          </select>
+          {errors.role && (
+            <p className="text-red-500 text-sm mt-2">{errors.role}</p>
+          )}
+          <p className="text-gray-500 text-xs mt-1">
+            Choisissez votre rôle dans l&apos;arbitrage
+          </p>
+        </div>
+
         {/* Ligue d'Arbitrage */}
         <div>
           <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
@@ -49,26 +82,41 @@ export default function Step2ProfessionalInfo({
           </label>
           
           {liguesError && (
-            <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-sm">
-              ⚠️ Erreur de chargement des ligues. Utilisation de valeurs par défaut.
+            <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
+              <div className="flex items-center justify-between">
+                <span>⚠️ Erreur de chargement des ligues: {liguesError}</span>
+                <button
+                  onClick={refetch}
+                  className="ml-2 px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
+                >
+                  Réessayer
+                </button>
+              </div>
             </div>
           )}
           
           <select
             value={data.ligueCode}
-            onChange={(e) => onChange({ ligueCode: e.target.value })}
-            disabled={liguesLoading}
+            onChange={(e) => onChangeAction({ ligueCode: e.target.value })}
+            disabled={liguesLoading || !!liguesError}
             className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors text-gray-700 bg-white ${
               errors.ligueCode 
                 ? 'border-red-500 focus:border-red-500' 
                 : 'border-gray-200 focus:border-red-500'
             } ${isRtl ? 'text-right font-arabic' : 'text-left'} ${
-              liguesLoading ? 'opacity-50 cursor-not-allowed' : ''
+              (liguesLoading || !!liguesError) ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             dir={isRtl ? 'rtl' : 'ltr'}
           >
             <option value="">
-              {liguesLoading ? 'Chargement des ligues...' : 'Sélectionnez votre ligue'}
+              {liguesLoading 
+                ? 'Chargement des ligues...' 
+                : liguesError 
+                ? 'Erreur de chargement'
+                : liguesOptions.length === 0
+                ? 'Aucune ligue disponible'
+                : 'Sélectionnez votre ligue'
+              }
             </option>
             {liguesOptions.map((ligue) => (
               <option key={ligue.value} value={ligue.value}>
@@ -93,7 +141,7 @@ export default function Step2ProfessionalInfo({
           </label>
           <select
             value={data.grade}
-            onChange={(e) => onChange({ grade: e.target.value })}
+            onChange={(e) => onChangeAction({ grade: e.target.value })}
             className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors text-gray-700 bg-white ${
               errors.grade 
                 ? 'border-red-500 focus:border-red-500' 
@@ -121,7 +169,7 @@ export default function Step2ProfessionalInfo({
           <input
             type="date"
             value={data.dateNaissance}
-            onChange={(e) => onChange({ dateNaissance: e.target.value })}
+            onChange={(e) => onChangeAction({ dateNaissance: e.target.value })}
             className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors text-gray-700 ${
               errors.dateNaissance 
                 ? 'border-red-500 focus:border-red-500' 
@@ -142,7 +190,7 @@ export default function Step2ProfessionalInfo({
           <input
             type="text"
             value={data.lieuNaissance}
-            onChange={(e) => onChange({ lieuNaissance: e.target.value })}
+            onChange={(e) => onChangeAction({ lieuNaissance: e.target.value })}
             className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors text-gray-700 ${
               errors.lieuNaissance 
                 ? 'border-red-500 focus:border-red-500' 

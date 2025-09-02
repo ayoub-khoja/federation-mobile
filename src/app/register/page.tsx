@@ -24,6 +24,7 @@ export default function RegisterPage() {
     registrationData,
     errors,
     isLoading: isRegistering,
+    phoneVerification,
     updatePersonalInfo,
     updateProfessionalInfo,
     updateSecurityInfo,
@@ -187,6 +188,7 @@ export default function RegisterPage() {
                     data={registrationData.personalInfo}
                     onChange={updatePersonalInfo}
                     errors={errors}
+                    phoneVerification={phoneVerification}
                     isRtl={isRtl}
                   />
                 )}
@@ -194,7 +196,7 @@ export default function RegisterPage() {
                 {currentStep === 2 && (
                   <Step2ProfessionalInfo
                     data={registrationData.professionalInfo}
-                    onChange={updateProfessionalInfo}
+                    onChangeAction={updateProfessionalInfo}
                     errors={errors}
                     isRtl={isRtl}
                   />

@@ -5,6 +5,18 @@ import { ServiceWorkerRegistration } from "../components/ServiceWorkerRegistrati
 export const metadata: Metadata = {
   title: "Direction Nationale de l'Arbitrage - FTF",
   description: "Système de connexion pour la Direction Nationale de l'Arbitrage de la Fédération Tunisienne de Football",
+  icons: {
+    icon: [
+      { url: '/ftf-logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/ftf-logo.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/ftf-logo.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      { rel: 'icon', url: '/ftf-logo.png' },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -14,6 +26,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
+      <head>
+        <link rel="icon" type="image/png" sizes="32x32" href="/ftf-logo.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/ftf-logo.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/ftf-logo.png" />
+        <link rel="shortcut icon" href="/ftf-logo.png" />
+      </head>
       <body className="antialiased font-sans">
         {children}
         <ServiceWorkerRegistration />

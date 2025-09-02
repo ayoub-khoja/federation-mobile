@@ -17,17 +17,17 @@ export default function Header({ homeT, language, isRtl, onToggleLanguage }: Hea
     <header className="bg-white/10 backdrop-blur-sm border-b border-white/20 flex-shrink-0">
       <div className="max-w-7xl mx-auto px-6 py-3">
         
-        {/* Première ligne : Logos + Titre */}
-        <div className="flex items-center justify-between mb-2">
+        {/* Première ligne : Logo FTF + Titre */}
+        <div className="flex items-center justify-center mb-2">
           
-          {/* Section gauche : Cartons */}
-          <div className="flex items-center">
+          {/* Logo FTF à gauche */}
+          <div className="flex items-center mr-4">
             <div className="relative animate-float">
               <Image
-                src="/cartons.png"
-                alt="Cartons d'arbitre"
-                width={60}
-                height={60}
+                src="/ftf-logo.png"
+                alt="Fédération Tunisienne de Football"
+                width={70}
+                height={70}
                 className="drop-shadow-lg"
                 priority
               />
@@ -35,21 +35,23 @@ export default function Header({ homeT, language, isRtl, onToggleLanguage }: Hea
           </div>
 
           {/* Section centrale : Titre */}
-          <div className="flex-1 text-center px-1">
-            <h1 className={`text-white text-sm font-bold ${isRtl ? 'font-arabic' : ''}`}>
+          <div className="flex-1 text-center px-2">
+            <h1 className={`text-white text-lg font-bold ${isRtl ? 'font-arabic' : ''}`}>
               {homeT.title}
             </h1>
+            <p className="text-white/80 text-xs mt-1">
+              Fédération Tunisienne de Football
+            </p>
           </div>
 
-          {/* Section droite : Logo FTF */}
-          <div className="flex items-center space-x-4">
-            {/* Logo FTF */}
+          {/* Cartons à droite */}
+          <div className="flex items-center ml-4">
             <div className="relative animate-float" style={{animationDelay: '0.5s'}}>
               <Image
-                src="/ftf-logo.png"
-                alt="Fédération Tunisienne de Football"
-                width={60}
-                height={60}
+                src="/cartons.png"
+                alt="Cartons d'arbitre"
+                width={50}
+                height={50}
                 className="drop-shadow-lg"
                 priority
               />

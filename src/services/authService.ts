@@ -27,18 +27,28 @@ class AuthService {
 
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     try {
+      console.log('🔍 Debug connexion:', {
+        phoneNumber: credentials.phoneNumber,
+        format: /^\+216\d{8}$/.test(credentials.phoneNumber) ? '✅ Valide' : '❌ Invalide'
+      });
+
       const response = await fetch(`${this.baseURL}/accounts/auth/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          phone_number: credentials.phoneNumber,
+          phone_number: credentials.phoneNumber, // Envoyer avec le préfixe +216
           password: credentials.password
         })
       });
 
       const data = await response.json();
+      console.log('📡 Réponse API connexion:', {
+        status: response.status,
+        ok: response.ok,
+        data: data
+      });
 
       if (!response.ok) {
         return {

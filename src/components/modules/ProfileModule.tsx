@@ -6,6 +6,7 @@ import { useProfile } from '../../hooks/useProfile';
 import { useLigues } from '../../hooks/useLigues';
 import { GRADES } from '../../hooks/useRegistration';
 import { PushNotificationManager } from '../PushNotificationManager';
+import { getBackendUrl } from '../../config/config';
 
 interface ProfileModuleProps {
   isRtl: boolean;
@@ -16,6 +17,7 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
   const router = useRouter();
   const { profile, isLoading, error, updateProfile, logout, getAge, getFormattedJoinDate } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
   const [editData, setEditData] = useState({
     first_name: '',
@@ -36,6 +38,8 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
         address: profile.address || '',
         birth_place: profile.birth_place || ''
       });
+      // Reset l'état d'erreur d'image quand le profil change
+      setImageError(false);
     }
   }, [profile]);
 
@@ -136,11 +140,22 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
           <div className="flex justify-center md:justify-start">
             <div className="relative">
               <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center border-4 border-red-200 overflow-hidden">
-                {profile.profile_photo ? (
+                {profile.profile_photo && !imageError ? (
                   <img 
-                    src={profile.profile_photo} 
+                    src={profile.profile_photo.startsWith('http') 
+                      ? profile.profile_photo 
+                      : `${getBackendUrl()}${profile.profile_photo}`
+                    } 
                     alt="Photo de profil" 
                     className="w-full h-full object-cover"
+                    onError={() => {
+                      console.error('Erreur de chargement de l\'image de profil');
+                      setImageError(true);
+                    }}
+                    onLoad={() => {
+                      console.log('Image de profil chargée avec succès');
+                      setImageError(false);
+                    }}
                   />
                 ) : (
                   <span className="text-4xl text-gray-400">👤</span>
