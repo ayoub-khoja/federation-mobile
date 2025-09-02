@@ -34,9 +34,13 @@ export const APP_CONFIG = {
       PROFILE: '/accounts/arbitres/profile/',
       PROFILE_UPDATE: '/accounts/arbitres/profile/update/',
       
-      // Notifications
+      // Notifications (ancien système VAPID)
       PUSH_SUBSCRIBE: '/notifications/push/subscribe/',
       PUSH_UNSUBSCRIBE: '/notifications/push/unsubscribe/',
+      
+      // Notifications Firebase Cloud Messaging (nouveau)
+      FCM_SUBSCRIBE: '/notifications/fcm/subscribe/',
+      FCM_UNSUBSCRIBE: '/notifications/fcm/unsubscribe/',
       
       // Tests
       TEST: '/test/',
@@ -65,7 +69,13 @@ export const APP_CONFIG = {
     ICON: '/ftf-logo.png',
     BADGE: '/ftf-logo.png',
     AUTO_CLOSE_DELAY: 5000,
-    VAPID_PUBLIC_KEY: 'BDpgiiNfAzMtRqsTFxRI_KvGtYGjbwFnbRklbKk4_AgmaDiXJQivL3yP2HLtOlzBOKqkXTtYpA9iHuHSKEVlRdE'
+    // Ancien système VAPID (déprécié)
+    VAPID_PUBLIC_KEY: 'BDpgiiNfAzMtRqsTFxRI_KvGtYGjbwFnbRklbKk4_AgmaDiXJQivL3yP2HLtOlzBOKqkXTtYpA9iHuHSKEVlRdE',
+    // Nouveau système Firebase Cloud Messaging
+    FCM: {
+      VAPID_KEY: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || 'your-vapid-key',
+      PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'your-project-id'
+    }
   }
 };
 

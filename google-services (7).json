@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "865044602349",
+    "project_id": "federation-16c7a",
+    "storage_bucket": "federation-16c7a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865044602349:android:8f4dbc957abdb114171be4",
+        "android_client_info": {
+          "package_name": "android.federation"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQu_kvPHIWFmAlsr6b2PUea7tSDZ44RxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

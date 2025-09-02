@@ -3,6 +3,8 @@
 import React from 'react';
 import MatchForm from './MatchForm';
 import MatchHistory from './MatchHistory';
+import ExcuseForm from './ExcuseForm';
+import ExcuseHistory from './ExcuseHistory';
 
 interface MatchFormData {
   matchType: string;
@@ -24,8 +26,12 @@ interface MatchModuleProps {
   homeT: {[key: string]: string};
   showAddMatchForm: boolean;
   showMatchHistory: boolean;
+  showExcuseForm: boolean;
+  showExcuseHistory: boolean;
   onAddMatchClick: () => void;
   onHistoryClick: () => void;
+  onExcuseClick: () => void;
+  onExcuseHistoryClick: () => void;
   onCancelForm: () => void;
   matchForm: MatchFormData;
   onFormInputChange: (field: string, value: string) => void;
@@ -38,8 +44,12 @@ export default function MatchModule({
   homeT,
   showAddMatchForm,
   showMatchHistory,
+  showExcuseForm,
+  showExcuseHistory,
   onAddMatchClick,
   onHistoryClick,
+  onExcuseClick,
+  onExcuseHistoryClick,
   onCancelForm,
   matchForm,
   onFormInputChange,
@@ -71,6 +81,26 @@ export default function MatchModule({
     );
   }
 
+  if (showExcuseForm) {
+    return (
+      <ExcuseForm
+        isRtl={isRtl}
+        homeT={homeT}
+        onBack={onCancelForm}
+      />
+    );
+  }
+
+  if (showExcuseHistory) {
+    return (
+      <ExcuseHistory
+        isRtl={isRtl}
+        homeT={homeT}
+        onBack={onCancelForm}
+      />
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Titre de la section */}
@@ -82,7 +112,7 @@ export default function MatchModule({
       </div>
       
       {/* Boutons d'action pour les matchs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         
         {/* Ajouter un match */}
         <div 
@@ -116,6 +146,42 @@ export default function MatchModule({
             </h3>
             <p className={`text-gray-600 text-xs leading-relaxed ${isRtl ? 'font-arabic' : ''}`}>
               Consulter l&apos;historique
+            </p>
+          </div>
+        </div>
+
+        {/* Ajouter une excuse */}
+        <div 
+          onClick={onExcuseClick}
+          className="glass rounded-2xl shadow-ftf overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group animate-fadeInUp"
+        >
+          <div className="p-6 text-center">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-all duration-300 group-hover:scale-105">
+              <span className="text-orange-600 text-2xl">📝</span>
+            </div>
+            <h3 className={`text-xl font-bold text-gray-800 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+              Ajouter excuse
+            </h3>
+            <p className={`text-gray-600 text-xs leading-relaxed ${isRtl ? 'font-arabic' : ''}`}>
+              Déclarer une excuse pour un match
+            </p>
+          </div>
+        </div>
+
+        {/* Historique des excuses */}
+        <div 
+          onClick={onExcuseHistoryClick}
+          className="glass rounded-2xl shadow-ftf overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group animate-fadeInUp"
+        >
+          <div className="p-6 text-center">
+            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-all duration-300 group-hover:scale-105">
+              <span className="text-purple-600 text-2xl">📊</span>
+            </div>
+            <h3 className={`text-xl font-bold text-gray-800 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+              Historique excuses
+            </h3>
+            <p className={`text-gray-600 text-xs leading-relaxed ${isRtl ? 'font-arabic' : ''}`}>
+              Consulter l&apos;historique des excuses
             </p>
           </div>
         </div>

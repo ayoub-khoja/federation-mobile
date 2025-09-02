@@ -1,0 +1,91 @@
+/**
+ * Configuration Firebase pour l'application
+ * Remplace le système VAPID par Firebase Cloud Messaging (FCM)
+ */
+
+import { initializeApp } from 'firebase/app';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+
+// Configuration Firebase pour iOS, Android et Web
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyB51FSdFZalgylYq677RlHGDT2o-iS4ifA",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "federation-16c7a.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "federation-16c7a",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "federation-16c7a.firebasestorage.app",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "865044602349",
+  // Pour le web, nous utilisons l'App ID web, sinon l'App ID iOS comme fallback
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID_WEB || 
+         process.env.NEXT_PUBLIC_FIREBASE_APP_ID || 
+         "1:865044602349:web:1ca0086e1512f626171be4",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-XXXXXXXXXX" // Optionnel
+};
+
+// Initialiser Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialiser Firebase Cloud Messaging
+let messaging: any = null;
+
+if (typeof window !== 'undefined') {
+  messaging = getMessaging(app);
+}
+
+export { messaging };
+
+/**
+ * Obtenir le token FCM pour l'utilisateur actuel
+ */
+export const getFCMToken = async (): Promise<string | null> => {
+  if (!messaging) {
+    console.warn('Firebase Messaging non disponible');
+    return null;
+  }
+
+  try {
+    // Demander la permission pour les notifications
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      throw new Error('Permission refusée pour les notifications');
+    }
+
+    // Obtenir le token FCM
+    const token = await getToken(messaging, {
+      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || "BIXzfPVhX1sgOYE2ii2L8Yu3odvBet7R7L2iuRzp-MJW8E68ugDaGY7mUtF-tVkvdy8NkRHTr7zDS1MmZulzxCk"
+    });
+
+    if (token) {
+      console.log('✅ Token FCM obtenu:', token);
+      return token;
+    } else {
+      console.warn('❌ Aucun token FCM disponible');
+      return null;
+    }
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'obtention du token FCM:', error);
+    return null;
+  }
+};
+
+/**
+ * Écouter les messages FCM en arrière-plan
+ */
+export const onFCMessage = (callback: (payload: any) => void) => {
+  if (!messaging) {
+    console.warn('Firebase Messaging non disponible');
+    return;
+  }
+
+  onMessage(messaging, (payload: any) => {
+    console.log('🔔 Message FCM reçu en arrière-plan:', payload);
+    callback(payload);
+  });
+};
+
+/**
+ * Vérifier si FCM est supporté
+ */
+export const isFCMSupported = (): boolean => {
+  return typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window;
+};
+
+export default app;

@@ -1,0 +1,180 @@
+/**
+ * Hook pour gérer les notifications Firebase Cloud Messaging (FCM)
+ * Remplace usePushNotifications pour utiliser FCM au lieu de VAPID
+ */
+
+import { useState, useEffect, useCallback } from 'react';
+import { getFCMToken, onFCMessage, isFCMSupported } from '../config/firebase';
+
+interface FCMNotificationState {
+  isSupported: boolean;
+  isSubscribed: boolean;
+  isSubscribing: boolean;
+  error: string | null;
+  token: string | null;
+}
+
+export const useFCMNotifications = () => {
+  const [state, setState] = useState<FCMNotificationState>({
+    isSupported: false,
+    isSubscribed: false,
+    isSubscribing: false,
+    error: null,
+    token: null
+  });
+
+  useEffect(() => {
+    // Vérifier si FCM est supporté
+    if (isFCMSupported()) {
+      setState(prev => ({ ...prev, isSupported: true }));
+      checkExistingSubscription();
+    }
+  }, []);
+
+  const checkExistingSubscription = useCallback(async () => {
+    try {
+      // Vérifier si on a déjà un token FCM stocké
+      const storedToken = localStorage.getItem('fcm_token');
+      if (storedToken) {
+        setState(prev => ({ 
+          ...prev, 
+          isSubscribed: true, 
+          token: storedToken 
+        }));
+      }
+    } catch (error) {
+      console.error('Erreur lors de la vérification de l\'abonnement FCM:', error);
+    }
+  }, []);
+
+  const subscribe = useCallback(async () => {
+    if (!state.isSupported) return;
+
+    setState(prev => ({ ...prev, isSubscribing: true, error: null }));
+
+    try {
+      // Obtenir le token FCM
+      const token = await getFCMToken();
+      
+      if (!token) {
+        throw new Error('Impossible d\'obtenir le token FCM');
+      }
+
+      // Envoyer le token au serveur
+      const response = await fetch('/api/accounts/fcm/subscribe/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+          fcm_token: token,
+          user_agent: navigator.userAgent
+        })
+      });
+
+      if (response.ok) {
+        // Stocker le token localement
+        localStorage.setItem('fcm_token', token);
+        
+        setState(prev => ({ 
+          ...prev, 
+          isSubscribed: true, 
+          isSubscribing: false,
+          token: token
+        }));
+        
+        console.log('✅ Abonnement FCM réussi');
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de l\'enregistrement du token FCM');
+      }
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      setState(prev => ({ 
+        ...prev, 
+        error: errorMessage, 
+        isSubscribing: false 
+      }));
+      console.error('❌ Erreur lors de l\'abonnement FCM:', error);
+    }
+  }, [state.isSupported]);
+
+  const unsubscribe = useCallback(async () => {
+    if (!state.token) return;
+
+    setState(prev => ({ ...prev, isSubscribing: true, error: null }));
+
+    try {
+      // Envoyer la demande de désabonnement au serveur
+      const response = await fetch('/api/accounts/fcm/unsubscribe/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+          fcm_token: state.token
+        })
+      });
+
+      if (response.ok) {
+        // Supprimer le token du stockage local
+        localStorage.removeItem('fcm_token');
+        
+        setState(prev => ({ 
+          ...prev, 
+          isSubscribed: false, 
+          isSubscribing: false,
+          token: null
+        }));
+        
+        console.log('✅ Désabonnement FCM réussi');
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors du désabonnement FCM');
+      }
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      setState(prev => ({ 
+        ...prev, 
+        error: errorMessage, 
+        isSubscribing: false 
+      }));
+      console.error('❌ Erreur lors du désabonnement FCM:', error);
+    }
+  }, [state.token]);
+
+  const toggle = useCallback(async () => {
+    if (state.isSubscribed) {
+      await unsubscribe();
+    } else {
+      await subscribe();
+    }
+  }, [state.isSubscribed, subscribe, unsubscribe]);
+
+  const clearError = useCallback(() => {
+    setState(prev => ({ ...prev, error: null }));
+  }, []);
+
+  // Écouter les messages FCM en arrière-plan
+  useEffect(() => {
+    if (state.isSubscribed) {
+      onFCMessage((payload) => {
+        console.log('🔔 Message FCM reçu:', payload);
+        // Ici vous pouvez ajouter une logique pour afficher des notifications
+        // ou mettre à jour l'état de l'application
+      });
+    }
+  }, [state.isSubscribed]);
+
+  return {
+    ...state,
+    subscribe,
+    unsubscribe,
+    toggle,
+    clearError
+  };
+};

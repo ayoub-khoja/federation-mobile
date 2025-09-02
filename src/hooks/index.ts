@@ -10,6 +10,7 @@ export { useNavigation } from './useNavigation';
 export { useMatchData } from './useMatchData';
 export { useMatchForm } from './useMatchForm';
 export { useMatchHistory } from './useMatchHistory';
+export { useExcuseHistory } from './useExcuseHistory';
 export { useNews } from './useNews';
 export type { MatchFormData } from './useMatchForm';
 export type { PersonalInfo, ProfessionalInfo, SecurityInfo, RegistrationData } from './useRegistration';

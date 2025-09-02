@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { usePushNotifications } from '../../hooks/usePushNotifications';
+import { useFCMNotifications } from '../../hooks/useFCMNotifications';
+import { PushNotificationManager } from '../PushNotificationManager';
 
 interface NotificationModuleProps {
   isRtl: boolean;
@@ -16,7 +17,9 @@ export default function NotificationModule({ isRtl, homeT }: NotificationModuleP
     unsubscribe, 
     isSubscribing,
     error 
-  } = usePushNotifications();
+  } = useFCMNotifications();
+
+  const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(false);
 
   const [notifications, setNotifications] = useState([
     {
@@ -71,6 +74,20 @@ export default function NotificationModule({ isRtl, homeT }: NotificationModuleP
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  const markAllAsRead = () => {
+    setNotifications(prev => 
+      prev.map(notif => ({ ...notif, read: true }))
+    );
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const deleteNotification = (id: number) => {
+    setNotifications(prev => prev.filter(notif => notif.id !== id));
+  };
+
   return (
     <div className="glass rounded-3xl shadow-ftf overflow-hidden animate-fadeInUp">
       <div className="p-6">
@@ -86,48 +103,13 @@ export default function NotificationModule({ isRtl, homeT }: NotificationModuleP
           )}
         </div>
 
-        {/* Configuration des notifications push */}
-        <div className="bg-white/10 rounded-2xl p-4 mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
-            Notifications Push
-          </h3>
-          
-          {!isSupported && (
-            <div className="text-orange-600 text-sm mb-3">
-              ⚠️ Les notifications push ne sont pas supportées sur ce navigateur
-            </div>
-          )}
-
-          {isSupported && (
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-800 text-sm">
-                  {isSubscribed ? '✅ Abonné aux notifications' : '❌ Non abonné'}
-                </p>
-                <p className="text-gray-600 text-xs">
-                  Recevez des alertes pour vos désignations et rappels
-                </p>
-              </div>
-              
-              <button
-                onClick={isSubscribed ? handleUnsubscribe : handleSubscribe}
-                disabled={isSubscribing}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isSubscribed
-                    ? 'bg-red-600 text-white hover:bg-red-700'
-                    : 'bg-green-600 text-white hover:bg-green-700'
-                } ${isSubscribing ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {isSubscribing ? '⏳' : isSubscribed ? 'Désabonner' : 'S\'abonner'}
-              </button>
-            </div>
-          )}
-
-          {error && (
-            <div className="text-red-600 text-sm mt-2">
-              ❌ Erreur: {error}
-            </div>
-          )}
+        {/* Gestionnaire de notifications push */}
+        <div className="mb-6">
+          <PushNotificationManager 
+            userId={1} // Vous pouvez passer l'ID utilisateur depuis le contexte
+            isEnabled={pushNotificationsEnabled}
+            onToggle={setPushNotificationsEnabled}
+          />
         </div>
 
         {/* Liste des notifications */}
@@ -168,10 +150,21 @@ export default function NotificationModule({ isRtl, homeT }: NotificationModuleP
                     </p>
                   </div>
                   
-                  <div className="text-2xl ml-3">
-                    {notification.type === 'designation' && '🏆'}
-                    {notification.type === 'reminder' && '⏰'}
-                    {notification.type === 'profile' && '👤'}
+                  <div className="flex items-center gap-2">
+                    <div className="text-2xl">
+                      {notification.type === 'designation' && '🏆'}
+                      {notification.type === 'reminder' && '⏰'}
+                      {notification.type === 'profile' && '👤'}
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteNotification(notification.id);
+                      }}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      🗑️
+                    </button>
                   </div>
                 </div>
               </div>
@@ -181,13 +174,50 @@ export default function NotificationModule({ isRtl, homeT }: NotificationModuleP
 
         {/* Actions */}
         <div className="mt-6 flex gap-3">
-          <button className="flex-1 bg-blue-100 text-blue-800 py-2 px-4 rounded-lg hover:bg-blue-200 transition-colors">
-            Marquer tout comme lu
+          <button 
+            onClick={markAllAsRead}
+            disabled={unreadCount === 0}
+            className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
+              unreadCount === 0 
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+            }`}
+          >
+            Marquer tout comme lu ({unreadCount})
           </button>
-          <button className="flex-1 bg-red-100 text-red-800 py-2 px-4 rounded-lg hover:bg-red-200 transition-colors">
-            Effacer tout
+          <button 
+            onClick={clearAllNotifications}
+            disabled={notifications.length === 0}
+            className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
+              notifications.length === 0 
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                : 'bg-red-100 text-red-800 hover:bg-red-200'
+            }`}
+          >
+            Effacer tout ({notifications.length})
           </button>
         </div>
+
+        {/* Statistiques des notifications */}
+        {notifications.length > 0 && (
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">📊 Statistiques</h4>
+            <div className="grid grid-cols-3 gap-4 text-center text-xs">
+              <div>
+                <div className="text-lg font-bold text-blue-600">{notifications.length}</div>
+                <div className="text-gray-600">Total</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-red-600">{unreadCount}</div>
+                <div className="text-gray-600">Non lues</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-green-600">{notifications.length - unreadCount}</div>
+                <div className="text-gray-600">Lues</div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

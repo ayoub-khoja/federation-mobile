@@ -20,11 +20,15 @@ export default function HomePage() {
     matchForm,
     showAddMatchForm,
     showMatchHistory,
+    showExcuseForm,
+    showExcuseHistory,
     handleFormInputChange,
     handleFileUpload,
     handleSubmitMatch,
     handleAddMatchClick,
     handleHistoryClick,
+    handleExcuseClick,
+    handleExcuseHistoryClick,
     handleCancelForm
   } = useMatchForm();
   
@@ -36,7 +40,7 @@ export default function HomePage() {
 
   // Gestion de la fermeture du formulaire lors du changement d'onglet
   const handleTabChangeWithFormReset = (tab: string) => {
-    if (showAddMatchForm || showMatchHistory) {
+    if (showAddMatchForm || showMatchHistory || showExcuseForm || showExcuseHistory) {
       handleCancelForm();
     }
     handleTabChange(tab);
@@ -83,8 +87,12 @@ export default function HomePage() {
               homeT={homeT}
               showAddMatchForm={showAddMatchForm}
               showMatchHistory={showMatchHistory}
+              showExcuseForm={showExcuseForm}
+              showExcuseHistory={showExcuseHistory}
               onAddMatchClick={handleAddMatchClick}
               onHistoryClick={handleHistoryClick}
+              onExcuseClick={handleExcuseClick}
+              onExcuseHistoryClick={handleExcuseHistoryClick}
               onCancelForm={handleCancelForm}
               matchForm={matchForm as any}
               onFormInputChange={handleFormInputChange}

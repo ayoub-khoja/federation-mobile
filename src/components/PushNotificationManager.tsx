@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { usePushNotifications } from '../hooks/usePushNotifications';
+import { useFCMNotifications } from '../hooks/useFCMNotifications';
 
 interface PushNotificationManagerProps {
   userId: number;
@@ -21,7 +21,7 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
     error,
     toggle,
     clearError
-  } = usePushNotifications();
+  } = useFCMNotifications();
 
   // Synchroniser l'état local avec le hook
   React.useEffect(() => {

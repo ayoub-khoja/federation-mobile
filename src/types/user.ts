@@ -5,6 +5,7 @@ export interface UserProfile {
   email?: string;
   phone_number: string;
   grade: string;
+  role?: string; // 'arbitre' ou 'assistant'
   birth_date?: string;
   birth_place?: string;
   ligue?: number;

@@ -35,6 +35,8 @@ export const useMatchForm = () => {
   const [matchForm, setMatchForm] = useState<MatchFormData>(initialFormData);
   const [showAddMatchForm, setShowAddMatchForm] = useState(false);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
+  const [showExcuseForm, setShowExcuseForm] = useState(false);
+  const [showExcuseHistory, setShowExcuseHistory] = useState(false);
 
   const handleFormInputChange = (field: string, value: string) => {
     setMatchForm(prev => ({
@@ -135,16 +137,36 @@ export const useMatchForm = () => {
   const handleAddMatchClick = () => {
     setShowAddMatchForm(true);
     setShowMatchHistory(false);
+    setShowExcuseForm(false);
+    setShowExcuseHistory(false);
   };
 
   const handleHistoryClick = () => {
     setShowMatchHistory(true);
     setShowAddMatchForm(false);
+    setShowExcuseForm(false);
+    setShowExcuseHistory(false);
+  };
+
+  const handleExcuseClick = () => {
+    setShowExcuseForm(true);
+    setShowAddMatchForm(false);
+    setShowMatchHistory(false);
+    setShowExcuseHistory(false);
+  };
+
+  const handleExcuseHistoryClick = () => {
+    setShowExcuseHistory(true);
+    setShowAddMatchForm(false);
+    setShowMatchHistory(false);
+    setShowExcuseForm(false);
   };
 
   const handleCancelForm = () => {
     setShowAddMatchForm(false);
     setShowMatchHistory(false);
+    setShowExcuseForm(false);
+    setShowExcuseHistory(false);
     resetForm();
   };
 
@@ -152,11 +174,15 @@ export const useMatchForm = () => {
     matchForm,
     showAddMatchForm,
     showMatchHistory,
+    showExcuseForm,
+    showExcuseHistory,
     handleFormInputChange,
     handleFileUpload,
     handleSubmitMatch,
     handleAddMatchClick,
     handleHistoryClick,
+    handleExcuseClick,
+    handleExcuseHistoryClick,
     handleCancelForm,
     resetForm
   };
