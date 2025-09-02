@@ -6,6 +6,14 @@ const nextConfig = {
   reactStrictMode: true,
 
   eslint: { ignoreDuringBuilds: true },
+  
+  // Configuration pour éviter les erreurs de build statique
+  output: 'standalone',
+  
+  // Désactiver le pré-rendu pour certaines pages problématiques
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
 
   images: {
     domains: ['localhost', '127.0.0.1', 'federation-mobile-front.vercel.app', 'vercel.app'],

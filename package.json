@@ -11,7 +11,10 @@
     "start:prod": "NODE_ENV=production next start",
     "lint": "eslint",
     "deploy:vercel": "vercel --prod",
-    "deploy:vercel:preview": "vercel"
+    "deploy:vercel:preview": "vercel",
+    "test:apis": "node scripts/test-apis.js",
+    "test:apis:local": "node scripts/test-apis.js --local",
+    "test:apis:prod": "node scripts/test-apis.js --production"
   },
   "dependencies": {
     "autoprefixer": "^10.4.21",

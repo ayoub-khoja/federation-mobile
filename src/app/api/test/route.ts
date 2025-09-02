@@ -5,7 +5,9 @@ export async function GET(request: NextRequest) {
     console.log('🧪 Test de connectivité API...');
     
     // Test de connectivité vers le backend
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://192.168.1.101:8000/api';
+    const backendUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://federation-backend.onrender.com/api'
+      : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api');
     console.log('🔗 Test de connexion vers:', backendUrl);
     
     const response = await fetch(`${backendUrl}/accounts/test-auth/`, {
@@ -41,7 +43,9 @@ export async function GET(request: NextRequest) {
       success: false,
       message: 'Erreur de connectivité',
       error: error instanceof Error ? error.message : 'Erreur inconnue',
-      backend_url: process.env.NEXT_PUBLIC_API_URL || 'http://192.168.1.101:8000/api'
+      backend_url: process.env.NODE_ENV === 'production' 
+        ? 'https://federation-backend.onrender.com/api'
+        : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api')
     }, { status: 500 });
   }
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import ArbitreSelectionWithNotification from '../../components/ArbitreSelectionWithNotification';
 
 export default function TestNotificationsPage() {
