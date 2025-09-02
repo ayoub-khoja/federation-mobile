@@ -335,19 +335,11 @@ export const useRegistration = () => {
         formData.append('profile_photo', registrationData.personalInfo.profilePhoto);
       }
 
-      // Configuration de l'URL de base
-      const getBaseURL = () => {
-        if (typeof window !== 'undefined') {
-          const hostname = window.location.hostname;
-          if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-            return 'http://192.168.1.101:8000/api';
-          }
-        }
-        return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-      };
-
+      // Utiliser la configuration unifiée de l'API
+      const { getApiUrl } = await import('../config/api');
+      
       // Appel à l'API Django avec FormData
-      const response = await fetch(`${getBaseURL()}/accounts/arbitres/register/`, {
+      const response = await fetch(getApiUrl('/accounts/arbitres/register/'), {
         method: 'POST',
         // Ne pas définir Content-Type pour FormData, le navigateur le fera automatiquement
         body: formData

@@ -40,19 +40,11 @@ export const verifyPhoneNumber = async (
       };
     }
 
-    // Configuration de l'URL de base
-    const getBaseURL = () => {
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-          return 'https://federation-backend.onrender.com/api';
-        }
-      }
-      return 'http://localhost:8000/api';
-    };
+    // Utiliser la configuration unifiée de l'API
+    const { getApiUrl } = await import('../config/api');
 
     // Appel à l'API de vérification
-    const response = await fetch(`${getBaseURL()}/accounts/verify-phone/`, {
+    const response = await fetch(getApiUrl('/accounts/verify-phone/'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
