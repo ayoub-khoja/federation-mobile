@@ -254,59 +254,154 @@ export default function ForgotPasswordPage() {
                   </div>
                 </form>
               ) : (
-                /* Message de succès */
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                /* Interface style email de confirmation */
+                <div className="space-y-6">
+                  {/* En-tête avec logo FTF */}
+                  <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-6 text-center">
+                    <div className="flex items-center justify-center mb-3">
+                      <img 
+                        src="/Logo_federation_tunisienne_de_football.svg.png" 
+                        alt="Logo FTF" 
+                        className="h-12 w-auto mr-3"
+                      />
+                    </div>
+                    <h2 className="text-white text-xl font-bold">
+                      Fédération Tunisienne de Football
+                    </h2>
+                    <p className="text-red-100 text-sm mt-1">
+                      Réinitialisation de mot de passe
+                    </p>
                   </div>
-                  
-                  <h3 className={`text-lg font-semibold text-gray-800 ${isRtl ? 'font-arabic' : ''}`}>
-                    {forgotPasswordT.successTitle}
-                  </h3>
-                  
-                  <p className={`text-gray-600 text-sm ${isRtl ? 'font-arabic' : ''}`}>
-                    {forgotPasswordT.successMessage}
-                  </p>
-                  
+
+                  {/* Message de salutation */}
+                  <div className="text-center">
+                    <h3 className={`text-lg font-semibold text-gray-800 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+                      {language === 'fr' ? `Bonjour ${email.split('@')[0]},` : `مرحباً ${email.split('@')[0]}،`}
+                    </h3>
+                    <p className={`text-gray-600 text-sm leading-relaxed ${isRtl ? 'font-arabic' : ''}`}>
+                      {language === 'fr' 
+                        ? "Vous avez demandé la réinitialisation de votre mot de passe pour votre compte Arbitre."
+                        : "لقد طلبت إعادة تعيين كلمة المرور لحساب الحكم الخاص بك."
+                      }
+                    </p>
+                  </div>
+
+                  {/* Section OTP avec style email */}
+                  <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+                    <div className="flex items-center mb-3">
+                      <svg className="w-5 h-5 text-amber-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      <span className={`text-amber-800 font-medium text-sm ${isRtl ? 'font-arabic' : ''}`}>
+                        {language === 'fr' ? 'Code OTP de sécurité :' : 'رمز OTP الأمني:'}
+                      </span>
+                    </div>
+                    
+                    {/* Code OTP stylisé */}
+                    <div className="bg-white border-2 border-red-300 rounded-lg p-4 text-center">
+                      <div className="text-3xl font-bold text-red-700 tracking-widest">
+                        {language === 'fr' ? 'Vérifiez votre email' : 'تحقق من بريدك الإلكتروني'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Instructions */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className={`font-semibold text-gray-800 mb-3 ${isRtl ? 'font-arabic' : ''}`}>
+                      {language === 'fr' 
+                        ? 'Pour réinitialiser votre mot de passe, vous devez :'
+                        : 'لإعادة تعيين كلمة المرور، يجب عليك:'
+                      }
+                    </h4>
+                    <ol className={`space-y-2 text-sm text-gray-600 ${isRtl ? 'font-arabic' : ''}`}>
+                      <li className="flex items-start">
+                        <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">1</span>
+                        <span>
+                          {language === 'fr' 
+                            ? 'Vérifiez votre boîte email et cliquez sur le lien de réinitialisation'
+                            : 'تحقق من صندوق البريد الإلكتروني وانقر على رابط إعادة التعيين'
+                          }
+                        </span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">2</span>
+                        <span>
+                          {language === 'fr' 
+                            ? 'Entrez le code OTP reçu par email'
+                            : 'أدخل رمز OTP المستلم عبر البريد الإلكتروني'
+                          }
+                        </span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">3</span>
+                        <span>
+                          {language === 'fr' 
+                            ? 'Définissez votre nouveau mot de passe'
+                            : 'حدد كلمة المرور الجديدة'
+                          }
+                        </span>
+                      </li>
+                    </ol>
+                  </div>
+
                   {/* Timer et bouton de renvoi */}
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {timeLeft > 0 ? (
-                      <div className="text-center">
-                        <p className={`text-sm text-gray-600 ${isRtl ? 'font-arabic' : ''}`}>
-                          {forgotPasswordT.linkExpires} <span className="font-mono text-red-600 font-bold">{formatTime(timeLeft)}</span>
+                      <div className="text-center bg-red-50 rounded-lg p-4">
+                        <p className={`text-sm text-gray-700 ${isRtl ? 'font-arabic' : ''}`}>
+                          {language === 'fr' ? 'Le lien expire dans :' : 'ينتهي الرابط خلال:'}
                         </p>
+                        <div className="text-2xl font-bold text-red-600 font-mono mt-1">
+                          {formatTime(timeLeft)}
+                        </div>
                       </div>
                     ) : (
-                      <div className="text-center">
-                        <p className={`text-sm text-gray-600 mb-3 ${isRtl ? 'font-arabic' : ''}`}>
-                          {forgotPasswordT.resendAvailable} <span className="font-mono text-red-600 font-bold">0:00</span>
-                        </p>
+                      <div className="text-center space-y-3">
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                          <p className={`text-sm text-amber-800 ${isRtl ? 'font-arabic' : ''}`}>
+                            {language === 'fr' ? 'Le lien a expiré' : 'انتهت صلاحية الرابط'}
+                          </p>
+                        </div>
                         <button
                           onClick={handleResendCode}
                           disabled={isLoading('forgotPassword')}
-                          className={`w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none text-sm ${isRtl ? 'font-arabic' : ''}`}
+                          className={`w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none ${isRtl ? 'font-arabic' : ''}`}
                         >
                           {isLoading('forgotPassword') ? (
                             <div className="flex items-center justify-center gap-2">
                               <ButtonLoader />
-                              <span>Envoi...</span>
+                              <span>{language === 'fr' ? 'Envoi...' : 'جاري الإرسال...'}</span>
                             </div>
                           ) : (
-                            forgotPasswordT.resendCode
+                            language === 'fr' ? 'Renvoyer le code' : 'إعادة إرسال الرمز'
                           )}
                         </button>
                       </div>
                     )}
                   </div>
-                  
+
+                  {/* Bouton retour */}
                   <button
                     onClick={handleBackToLogin}
                     className={`w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 duration-200 ${isRtl ? 'font-arabic' : ''}`}
                   >
-                    {forgotPasswordT.backToLogin}
+                    {language === 'fr' ? 'Retour à la connexion' : 'العودة إلى تسجيل الدخول'}
                   </button>
+
+                  {/* Message d'information */}
+                  <div className="bg-blue-50 border-l-4 border-blue-400 p-3 rounded-r-lg">
+                    <div className="flex items-start">
+                      <svg className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className={`text-blue-800 text-xs ${isRtl ? 'font-arabic' : ''}`}>
+                        {language === 'fr' 
+                          ? 'Important : Si vous n\'avez pas demandé cette réinitialisation, ignorez cet email.'
+                          : 'مهم: إذا لم تطلب إعادة التعيين هذه، تجاهل هذا البريد الإلكتروني.'
+                        }
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
 
