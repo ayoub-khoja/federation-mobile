@@ -235,6 +235,7 @@ export default function LoginPage() {
                 <div className="text-center pt-2">
                   <button
                     type="button"
+                    onClick={() => router.push('/forgot-password')}
                     className={`text-gray-600 hover:text-red-600 transition-colors text-xs font-medium ${isRtl ? 'font-arabic' : ''}`}
                   >
                     {loginT.forgotPassword}

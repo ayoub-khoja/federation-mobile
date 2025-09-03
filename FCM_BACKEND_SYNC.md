@@ -252,3 +252,4 @@ urlpatterns = [
 5. **Intégration** : Tester le flux complet de bout en bout
 
 
+
