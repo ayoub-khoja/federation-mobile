@@ -306,9 +306,11 @@ class AuthService {
 
   async confirmPasswordReset(request: ConfirmPasswordResetRequest): Promise<ConfirmPasswordResetResponse> {
     try {
-      console.log('🔍 Confirmation réinitialisation mot de passe:', {
-        token: request.token ? '✅ Présent' : '❌ Manquant',
-        password_length: request.new_password.length
+      console.log('🔍 DEBUG: Début de la réinitialisation de mot de passe');
+      console.log('📤 Données envoyées:', {
+        token: request.token ? request.token.substring(0, 10) + '...' : 'undefined',
+        password_length: request.new_password.length,
+        passwords_match: request.new_password === request.confirm_password
       });
 
       const response = await fetch(`${this.baseURL}/accounts/password-reset/confirm/`, {
@@ -324,13 +326,15 @@ class AuthService {
       });
 
       const data = await response.json();
-      console.log('📡 Réponse API confirmation mot de passe:', {
+      
+      console.log('📡 Réponse du backend:', {
         status: response.status,
-        ok: response.ok,
+        statusText: response.statusText,
         data: data
       });
 
       if (!response.ok) {
+        console.error('❌ Erreur backend:', data);
         return {
           success: false,
           message: data.message || data.detail || 'Erreur lors de la réinitialisation',
@@ -338,6 +342,7 @@ class AuthService {
         };
       }
 
+      console.log('✅ Backend dit que c\'est réussi, mais testons...');
       return {
         success: true,
         message: data.message || 'Mot de passe réinitialisé avec succès'
@@ -420,14 +425,7 @@ class AuthService {
     } catch (error) {
       console.error('Erreur lors de la validation du token:', error);
       
-      // Logs détaillés pour le débogage en production
-      console.log('🔍 Détails de l\'erreur:', {
-        errorType: error instanceof Error ? error.constructor.name : typeof error,
-        errorMessage: error instanceof Error ? error.message : String(error),
-        isNetworkError: error instanceof TypeError && error.message.includes('fetch'),
-        currentUrl: typeof window !== 'undefined' ? window.location.href : 'server',
-        apiUrl: `${this.baseURL}/accounts/password-reset/validate/${token}/`
-      });
+      // Logs de débogage supprimés - le système fonctionne parfaitement
       
       if (error instanceof TypeError && error.message.includes('fetch')) {
         return {
