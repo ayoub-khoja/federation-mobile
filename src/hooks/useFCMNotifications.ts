@@ -25,9 +25,23 @@ export const useFCMNotifications = () => {
 
   useEffect(() => {
     // Vérifier si FCM est supporté
-    if (isFCMSupported()) {
+    const supported = isFCMSupported();
+    console.log('🔍 Vérification du support FCM:', {
+      supported,
+      serviceWorker: typeof window !== 'undefined' && 'serviceWorker' in navigator,
+      pushManager: typeof window !== 'undefined' && 'PushManager' in window,
+      notification: typeof window !== 'undefined' && 'Notification' in window
+    });
+    
+    if (supported) {
       setState(prev => ({ ...prev, isSupported: true }));
       checkExistingSubscription();
+    } else {
+      setState(prev => ({ 
+        ...prev, 
+        isSupported: false,
+        error: 'Firebase Cloud Messaging n\'est pas supporté par ce navigateur'
+      }));
     }
   }, []);
 

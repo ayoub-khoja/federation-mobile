@@ -23,6 +23,11 @@ export function getApiBaseUrl(): string {
       return 'http://localhost:8000/api';
     }
     
+    // Accès depuis mobile (IP locale)
+    if (hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.')) {
+      return 'http://192.168.1.100:8000/api';
+    }
+    
     // Autres environnements (staging, etc.)
     return `https://${hostname}/api`;
   }

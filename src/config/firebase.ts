@@ -85,7 +85,26 @@ export const onFCMessage = (callback: (payload: any) => void) => {
  * Vérifier si FCM est supporté
  */
 export const isFCMSupported = (): boolean => {
-  return typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window;
+  if (typeof window === 'undefined') return false;
+  
+  // Vérifier les APIs de base
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    return false;
+  }
+  
+  // Vérifier si Firebase est disponible
+  if (!messaging) {
+    console.warn('Firebase Messaging non initialisé');
+    return false;
+  }
+  
+  // Vérifier si les notifications sont supportées
+  if (!('Notification' in window)) {
+    console.warn('Notifications non supportées par ce navigateur');
+    return false;
+  }
+  
+  return true;
 };
 
 export default app;

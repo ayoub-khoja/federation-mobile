@@ -27,10 +27,15 @@ export function ServiceWorkerRegistration() {
 
     (async () => {
       try {
-        const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
-        console.log("✅ SW enregistré:", reg.scope);
+        // Enregistrer le service worker Firebase pour les notifications
+        const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js", { scope: "/" });
+        console.log("✅ Service Worker Firebase enregistré:", reg.scope);
+        
+        // Attendre que le service worker soit prêt
+        await navigator.serviceWorker.ready;
+        console.log("✅ Service Worker prêt pour les notifications FCM");
       } catch (e) {
-        console.error("❌ Échec enregistrement SW:", e);
+        console.error("❌ Échec enregistrement Service Worker Firebase:", e);
       }
     })();
   }, []);
