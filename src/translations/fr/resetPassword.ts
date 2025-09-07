@@ -12,3 +12,6 @@ export const resetPasswordTranslations = {
   copyright: "© 2025 Fédération Tunisienne de Football"
 };
 
+
+
+

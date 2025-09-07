@@ -100,15 +100,15 @@ export default function TestCardsPage() {
           </div>
           
           {/* Cartes d'informations détaillées */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="mt-6 grid grid-cols-2 gap-4">
             {/* Carte Rôle */}
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">⚽</span>
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">⚽</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-blue-800 text-sm">Rôle</h4>
+                  <h4 className="font-semibold text-blue-800 text-xs">Rôle</h4>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(testProfile.role)}`}>
                     {getRoleDisplay(testProfile.role)}
                   </span>
@@ -119,12 +119,12 @@ export default function TestCardsPage() {
             {/* Carte Grade */}
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">🏆</span>
+                <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">🏆</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-purple-800 text-sm">Grade</h4>
-                  <p className="text-purple-700 font-medium">
+                  <h4 className="font-semibold text-purple-800 text-xs">Grade</h4>
+                  <p className="text-purple-700 font-medium text-xs">
                     {GRADES.find(g => g.value === testProfile.grade)?.label || testProfile.grade}
                   </p>
                 </div>
@@ -134,12 +134,12 @@ export default function TestCardsPage() {
             {/* Carte Ligue */}
             <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">📍</span>
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">📍</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-green-800 text-sm">Ligue</h4>
-                  <p className="text-green-700 font-medium">{testProfile.ligue_nom}</p>
+                  <h4 className="font-semibold text-green-800 text-xs">Ligue</h4>
+                  <p className="text-green-700 font-medium text-xs">{testProfile.ligue_nom}</p>
                   <p className="text-green-600 text-xs">{testProfile.ligue_region}</p>
                 </div>
               </div>
@@ -148,12 +148,12 @@ export default function TestCardsPage() {
             {/* Carte Date de naissance */}
             <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">📅</span>
+                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">📅</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-orange-800 text-sm">Date de naissance</h4>
-                  <p className="text-orange-700 font-medium">
+                  <h4 className="font-semibold text-orange-800 text-xs">Date de naissance</h4>
+                  <p className="text-orange-700 font-medium text-xs">
                     {new Date(testProfile.birth_date).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
@@ -163,12 +163,12 @@ export default function TestCardsPage() {
             {/* Carte Âge */}
             <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-4 border border-pink-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">🎂</span>
+                <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">🎂</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-pink-800 text-sm">Âge</h4>
-                  <p className="text-pink-700 font-medium">{getAge()} ans</p>
+                  <h4 className="font-semibold text-pink-800 text-xs">Âge</h4>
+                  <p className="text-pink-700 font-medium text-xs">{getAge()} ans</p>
                 </div>
               </div>
             </div>
@@ -176,12 +176,12 @@ export default function TestCardsPage() {
             {/* Carte Lieu de naissance */}
             <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-4 border border-indigo-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">🏠</span>
+                <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">🏠</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-indigo-800 text-sm">Lieu de naissance</h4>
-                  <p className="text-indigo-700 font-medium">{testProfile.birth_place}</p>
+                  <h4 className="font-semibold text-indigo-800 text-xs">Lieu de naissance</h4>
+                  <p className="text-indigo-700 font-medium text-xs">{testProfile.birth_place}</p>
                 </div>
               </div>
             </div>
@@ -189,12 +189,12 @@ export default function TestCardsPage() {
                          {/* Carte Adresse */}
              <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-4 border border-teal-200">
                <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center">
-                   <span className="text-white text-lg">📍</span>
+                 <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
+                   <span className="text-white text-sm">📍</span>
                  </div>
                  <div>
-                   <h4 className="font-semibold text-teal-800 text-sm">Adresse</h4>
-                   <p className="text-teal-700 font-medium">{testProfile.address}</p>
+                   <h4 className="font-semibold text-teal-800 text-xs">Adresse</h4>
+                   <p className="text-teal-700 font-medium text-xs">{testProfile.address}</p>
                  </div>
                </div>
              </div>
@@ -202,12 +202,12 @@ export default function TestCardsPage() {
             {/* Carte Licence */}
             <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">🆔</span>
+                <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">🆔</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-amber-800 text-sm">Licence</h4>
-                  <p className="text-amber-700 font-medium">{testProfile.license_number}</p>
+                  <h4 className="font-semibold text-amber-800 text-xs">Licence</h4>
+                  <p className="text-amber-700 font-medium text-xs">{testProfile.license_number}</p>
                 </div>
               </div>
             </div>
@@ -215,12 +215,12 @@ export default function TestCardsPage() {
             {/* Carte CIN */}
             <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl p-4 border border-cyan-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">🆔</span>
+                <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">🆔</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-cyan-800 text-sm">CIN</h4>
-                  <p className="text-cyan-700 font-medium">
+                  <h4 className="font-semibold text-cyan-800 text-xs">CIN</h4>
+                  <p className="text-cyan-700 font-medium text-xs">
                     {testProfile.cin || 'Non renseigné'}
                   </p>
                 </div>
