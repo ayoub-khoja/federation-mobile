@@ -125,6 +125,8 @@ export const isFCMSupported = (): boolean => {
   const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
   const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
   const isSafari = /Safari/i.test(userAgent) && !/Chrome/i.test(userAgent);
+  const isChromeIOS = /CriOS/i.test(userAgent) || (/Chrome/i.test(userAgent) && isIOS);
+  const isFirefoxIOS = /FxiOS/i.test(userAgent) || (/Firefox/i.test(userAgent) && isIOS);
   
   if (isMobile) {
     // Sur mobile, vérifier la version du navigateur
@@ -136,18 +138,30 @@ export const isFCMSupported = (): boolean => {
         return false;
       }
       
-      // Sur iOS Safari, essayer d'activer les notifications même sans PWA
-      if (isSafari) {
+      // Sur iOS, gérer les différents navigateurs
+      if (isIOS) {
         // Vérifier si l'app est en mode PWA (ajoutée à l'écran d'accueil)
         const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                      (window.navigator as any).standalone === true ||
-                     document.referrer.includes('android-app://');
+                     document.referrer.includes('android-app://') ||
+                     localStorage.getItem('pwa_installed') === 'true';
         
-        if (isPWA) {
-          console.log('Mode PWA détecté sur iOS, tentative d\'activation des notifications');
+        if (isChromeIOS || isFirefoxIOS) {
+          // Chrome/Firefox sur iOS - essayer d'activer les notifications
+          console.log('Chrome/Firefox iOS détecté, tentative d\'activation des notifications');
+          if (isPWA) {
+            console.log('Mode PWA + Chrome/Firefox iOS - meilleure compatibilité');
+          }
+        } else if (isSafari) {
+          // Safari sur iOS - limitations connues
+          if (isPWA) {
+            console.log('Mode PWA détecté sur iOS Safari, tentative d\'activation des notifications');
+          } else {
+            console.log('iOS Safari détecté, tentative d\'activation des notifications (peut être limitée)');
+          }
         } else {
-          // Même sans PWA, essayer d'activer les notifications sur iOS Safari récent
-          console.log('iOS Safari détecté, tentative d\'activation des notifications (peut être limitée)');
+          // Autre navigateur iOS
+          console.log('Navigateur iOS non reconnu, tentative d\'activation des notifications');
         }
       }
     } else if (userAgent.includes('Android')) {

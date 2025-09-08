@@ -34,6 +34,8 @@ export const useFCMNotifications = () => {
     const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
+    const isChromeIOS = /CriOS/i.test(navigator.userAgent) || (/Chrome/i.test(navigator.userAgent) && isIOS);
+    const isFirefoxIOS = /FxiOS/i.test(navigator.userAgent) || (/Firefox/i.test(navigator.userAgent) && isIOS);
     // Détection PWA améliorée pour iOS
     const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                   (window.navigator as any).standalone === true ||
@@ -70,16 +72,28 @@ export const useFCMNotifications = () => {
       } else if (!debugInfo.serviceWorker) {
         errorMessage = 'Service Worker non supporté par ce navigateur';
       } else if (!debugInfo.pushManager) {
-        if (isIOS && isSafari) {
-          errorMessage = 'iOS Safari a des limitations pour les notifications push. Essayez Chrome ou Firefox, ou ajoutez l\'app à l\'écran d\'accueil.';
+        if (isIOS) {
+          if (isChromeIOS || isFirefoxIOS) {
+            errorMessage = 'Chrome/Firefox sur iOS a des limitations pour les notifications push. Essayez d\'ajouter l\'app à l\'écran d\'accueil (mode PWA).';
+          } else if (isSafari) {
+            errorMessage = 'iOS Safari a des limitations pour les notifications push. Essayez Chrome ou Firefox, ou ajoutez l\'app à l\'écran d\'accueil.';
+          } else {
+            errorMessage = 'iOS a des limitations pour les notifications push. Essayez Chrome, Firefox ou ajoutez l\'app à l\'écran d\'accueil.';
+          }
         } else if (isMobile) {
           errorMessage = 'Push Manager non supporté sur cet appareil mobile. Essayez Chrome ou Firefox récent.';
         } else {
           errorMessage = 'Push Manager non supporté par ce navigateur';
         }
       } else if (!debugInfo.notification) {
-        if (isIOS && isSafari) {
-          errorMessage = 'iOS Safari a des limitations pour les notifications. Essayez Chrome ou Firefox, ou ajoutez l\'app à l\'écran d\'accueil.';
+        if (isIOS) {
+          if (isChromeIOS || isFirefoxIOS) {
+            errorMessage = 'Chrome/Firefox sur iOS a des limitations pour les notifications. Essayez d\'ajouter l\'app à l\'écran d\'accueil (mode PWA).';
+          } else if (isSafari) {
+            errorMessage = 'iOS Safari a des limitations pour les notifications. Essayez Chrome ou Firefox, ou ajoutez l\'app à l\'écran d\'accueil.';
+          } else {
+            errorMessage = 'iOS a des limitations pour les notifications. Essayez Chrome, Firefox ou ajoutez l\'app à l\'écran d\'accueil.';
+          }
         } else if (isMobile) {
           errorMessage = 'Notifications non supportées sur cet appareil mobile. Vérifiez les paramètres du navigateur.';
         } else {

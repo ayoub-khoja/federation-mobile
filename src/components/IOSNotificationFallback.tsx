@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 
 interface IOSNotificationFallbackProps {
-  onNotificationRequest: () => void;
+  onNotificationRequestAction: () => void;
 }
 
-export const IOSNotificationFallback: React.FC<IOSNotificationFallbackProps> = ({ onNotificationRequest }) => {
+export const IOSNotificationFallback: React.FC<IOSNotificationFallbackProps> = ({ onNotificationRequestAction }) => {
   const [isIOS, setIsIOS] = useState(false);
   const [isSafari, setIsSafari] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
@@ -17,12 +17,14 @@ export const IOSNotificationFallback: React.FC<IOSNotificationFallbackProps> = (
     const userAgent = navigator.userAgent;
     const ios = /iPhone|iPad|iPod/i.test(userAgent);
     const safari = /Safari/i.test(userAgent) && !/Chrome/i.test(userAgent);
+    const chromeIOS = /CriOS/i.test(userAgent) || (/Chrome/i.test(userAgent) && ios);
+    const firefoxIOS = /FxiOS/i.test(userAgent) || (/Firefox/i.test(userAgent) && ios);
     
     setIsIOS(ios);
     setIsSafari(safari);
     
-    // Afficher le fallback si iOS Safari et pas de support notifications
-    if (ios && safari && !('Notification' in window)) {
+    // Afficher le fallback si iOS et pas de support notifications
+    if (ios && !('Notification' in window)) {
       setShowFallback(true);
     }
   }, []);
@@ -35,7 +37,7 @@ export const IOSNotificationFallback: React.FC<IOSNotificationFallbackProps> = (
         if (permission === 'granted') {
           // Marquer comme PWA installée pour la détection
           localStorage.setItem('pwa_installed', 'true');
-          onNotificationRequest();
+          onNotificationRequestAction();
         } else {
           alert('Notifications refusées. Veuillez les activer dans les paramètres Safari.');
         }
@@ -64,11 +66,11 @@ export const IOSNotificationFallback: React.FC<IOSNotificationFallbackProps> = (
         </div>
         <div className="ml-3 flex-1">
           <h3 className="text-sm font-medium text-blue-800">
-            🔔 Notifications sur iOS Safari
+            🔔 Notifications sur iOS
           </h3>
           <div className="mt-2 text-sm text-blue-700">
             <p className="mb-2">
-              iOS Safari a des limitations pour les notifications push. Voici vos options :
+              iOS a des limitations pour les notifications push. Voici vos options :
             </p>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
@@ -81,9 +83,10 @@ export const IOSNotificationFallback: React.FC<IOSNotificationFallbackProps> = (
                 <span className="text-xs">Tentative d'activation des notifications</span>
               </div>
               <div className="text-xs text-blue-600">
-                <p>• <strong>Option 1 :</strong> Utilisez Chrome ou Firefox sur iOS</p>
-                <p>• <strong>Option 2 :</strong> Ajoutez l'app à l'écran d'accueil (mode PWA)</p>
+                <p>• <strong>Option 1 :</strong> Ajoutez l'app à l'écran d'accueil (mode PWA) - RECOMMANDÉ</p>
+                <p>• <strong>Option 2 :</strong> Utilisez Chrome ou Firefox sur iOS</p>
                 <p>• <strong>Option 3 :</strong> Activez les notifications dans Réglages &gt; Safari &gt; Notifications</p>
+                <p className="mt-2 text-yellow-600">⚠️ <strong>Important :</strong> Même Chrome/Firefox sur iOS ont des limitations. Le mode PWA est la meilleure solution.</p>
               </div>
             </div>
           </div>

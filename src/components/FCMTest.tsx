@@ -5,6 +5,7 @@ import { useFCMNotifications } from '../hooks/useFCMNotifications';
 import { getFCMToken } from '../config/firebase';
 import { PWAInstallGuide } from './PWAInstallGuide';
 import { IOSNotificationFallback } from './IOSNotificationFallback';
+import { IOSDiagnostic } from './IOSDiagnostic';
 
 export const FCMTest: React.FC = () => {
   const {
@@ -91,9 +92,12 @@ export const FCMTest: React.FC = () => {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Test des Notifications FCM</h1>
       
+      {/* Diagnostic iOS */}
+      <IOSDiagnostic />
+
       {/* Fallback iOS Safari */}
       <IOSNotificationFallback 
-        onNotificationRequest={() => {
+        onNotificationRequestAction={() => {
           setRefreshKey(prev => prev + 1);
           window.location.reload();
         }}
