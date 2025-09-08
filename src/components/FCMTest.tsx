@@ -135,13 +135,24 @@ export const FCMTest: React.FC = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-medium text-blue-900 mb-2">Recommandations</h4>
             <div className="text-sm text-blue-800 space-y-1">
+              {typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent) && /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent) && (
+                <div className="bg-yellow-100 border border-yellow-300 rounded p-3 mb-2">
+                  <p className="font-medium text-yellow-800">⚠️ iOS Safari détecté</p>
+                  <p className="text-yellow-700">iOS Safari ne supporte pas les notifications push FCM. Pour recevoir des notifications :</p>
+                  <ul className="list-disc list-inside mt-1 space-y-1">
+                    <li>Téléchargez Chrome ou Firefox sur l'App Store</li>
+                    <li>Ouvrez cette page dans Chrome ou Firefox</li>
+                    <li>Activez les notifications dans le navigateur</li>
+                  </ul>
+                </div>
+              )}
               {typeof window !== 'undefined' && !('serviceWorker' in navigator) && (
                 <p>• Utilisez un navigateur moderne (Chrome, Firefox, Safari, Edge)</p>
               )}
-              {typeof window !== 'undefined' && !('PushManager' in window) && (
+              {typeof window !== 'undefined' && !('PushManager' in window) && !(/iPhone|iPad|iPod/i.test(navigator.userAgent) && /Safari/i.test(navigator.userAgent)) && (
                 <p>• Sur mobile, essayez Chrome ou Firefox récent</p>
               )}
-              {typeof window !== 'undefined' && !('Notification' in window) && (
+              {typeof window !== 'undefined' && !('Notification' in window) && !(/iPhone|iPad|iPod/i.test(navigator.userAgent) && /Safari/i.test(navigator.userAgent)) && (
                 <p>• Activez les notifications dans les paramètres du navigateur</p>
               )}
               {typeof window !== 'undefined' && !window.isSecureContext && (

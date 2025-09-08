@@ -123,14 +123,22 @@ export const isFCMSupported = (): boolean => {
   // Vérifier la version du navigateur pour les mobiles
   const userAgent = navigator.userAgent;
   const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+  const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+  const isSafari = /Safari/i.test(userAgent) && !/Chrome/i.test(userAgent);
   
   if (isMobile) {
     // Sur mobile, vérifier la version du navigateur
-    if (userAgent.includes('iPhone') || userAgent.includes('iPad')) {
+    if (isIOS) {
       // iOS nécessite une version récente
       const iosVersion = userAgent.match(/OS (\d+)_/);
       if (iosVersion && parseInt(iosVersion[1]) < 16) {
         console.warn('iOS version trop ancienne pour FCM');
+        return false;
+      }
+      
+      // Sur iOS Safari, les notifications push ne sont pas supportées de la même manière
+      if (isSafari) {
+        console.warn('iOS Safari ne supporte pas FCM. Utilisez Chrome ou Firefox sur iOS.');
         return false;
       }
     } else if (userAgent.includes('Android')) {

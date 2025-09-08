@@ -6,13 +6,13 @@ import { useFCMNotifications } from '../hooks/useFCMNotifications';
 interface PushNotificationManagerProps {
   userId: number;
   isEnabled: boolean;
-  onToggle: (enabled: boolean) => void;
+  onToggleAction: (enabled: boolean) => void;
 }
 
 export const PushNotificationManager: React.FC<PushNotificationManagerProps> = ({
   userId,
   isEnabled,
-  onToggle
+  onToggleAction
 }) => {
   const {
     isSupported,
@@ -25,14 +25,17 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
 
   // Synchroniser l'état local avec le hook
   React.useEffect(() => {
-    onToggle(isSubscribed);
-  }, [isSubscribed, onToggle]);
+    onToggleAction(isSubscribed);
+  }, [isSubscribed, onToggleAction]);
 
   const handleToggle = async () => {
     await toggle();
   };
 
   if (!isSupported) {
+    const isIOS = typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isSafari = typeof window !== 'undefined' && /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
+    
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
         <div className="flex items-center">
@@ -41,9 +44,22 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
           </svg>
           <div className="text-sm text-yellow-800">
             <p className="font-medium">Les notifications push ne sont pas supportées</p>
-            <p className="text-xs mt-1">
-              Votre navigateur ne supporte pas les notifications push ou Firebase n'est pas correctement configuré.
-            </p>
+            {isIOS && isSafari ? (
+              <div className="mt-2">
+                <p className="text-xs mb-2">
+                  iOS Safari ne supporte pas les notifications push FCM. Pour recevoir des notifications :
+                </p>
+                <ul className="text-xs list-disc list-inside space-y-1">
+                  <li>Téléchargez Chrome ou Firefox sur l'App Store</li>
+                  <li>Ouvrez cette page dans Chrome ou Firefox</li>
+                  <li>Activez les notifications dans le navigateur</li>
+                </ul>
+              </div>
+            ) : (
+              <p className="text-xs mt-1">
+                Votre navigateur ne supporte pas les notifications push ou Firebase n'est pas correctement configuré.
+              </p>
+            )}
             <details className="mt-2 text-xs">
               <summary className="cursor-pointer font-medium">Détails techniques</summary>
               <div className="mt-1 space-y-1">
@@ -56,6 +72,7 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
                 <p>• Contexte sécurisé: {typeof window !== 'undefined' && window.isSecureContext ? '✅' : '❌'}</p>
                 <p>• Hostname: {typeof window !== 'undefined' ? window.location.hostname : '❌'}</p>
                 <p>• Appareil mobile: {typeof window !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? '✅' : '❌'}</p>
+                <p>• iOS Safari: {isIOS && isSafari ? '✅' : '❌'}</p>
                 <p>• Firebase: {typeof window !== 'undefined' ? 'Vérification...' : '❌'}</p>
               </div>
             </details>

@@ -32,6 +32,8 @@ export const useFCMNotifications = () => {
     
     // Détection plus précise pour mobile
     const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
     const hasPushManager = 'PushManager' in window || 
                           ('serviceWorker' in navigator && 'PushManager' in ServiceWorkerRegistration.prototype);
     
@@ -59,13 +61,17 @@ export const useFCMNotifications = () => {
       } else if (!debugInfo.serviceWorker) {
         errorMessage = 'Service Worker non supporté par ce navigateur';
       } else if (!debugInfo.pushManager) {
-        if (isMobile) {
+        if (isIOS && isSafari) {
+          errorMessage = 'iOS Safari ne supporte pas les notifications push. Utilisez Chrome ou Firefox sur iOS.';
+        } else if (isMobile) {
           errorMessage = 'Push Manager non supporté sur cet appareil mobile. Essayez Chrome ou Firefox récent.';
         } else {
           errorMessage = 'Push Manager non supporté par ce navigateur';
         }
       } else if (!debugInfo.notification) {
-        if (isMobile) {
+        if (isIOS && isSafari) {
+          errorMessage = 'iOS Safari ne supporte pas les notifications push. Utilisez Chrome ou Firefox sur iOS.';
+        } else if (isMobile) {
           errorMessage = 'Notifications non supportées sur cet appareil mobile. Vérifiez les paramètres du navigateur.';
         } else {
           errorMessage = 'Notifications non supportées par ce navigateur';
