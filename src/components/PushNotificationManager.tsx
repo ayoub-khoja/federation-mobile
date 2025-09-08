@@ -50,6 +50,8 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
                 <p>• Service Worker: {typeof window !== 'undefined' && 'serviceWorker' in navigator ? '✅' : '❌'}</p>
                 <p>• Push Manager: {typeof window !== 'undefined' && 'PushManager' in window ? '✅' : '❌'}</p>
                 <p>• Notifications: {typeof window !== 'undefined' && 'Notification' in window ? '✅' : '❌'}</p>
+                <p>• Contexte sécurisé: {typeof window !== 'undefined' && window.isSecureContext ? '✅' : '❌'}</p>
+                <p>• Hostname: {typeof window !== 'undefined' ? window.location.hostname : '❌'}</p>
                 <p>• Firebase: {typeof window !== 'undefined' ? 'Vérification...' : '❌'}</p>
               </div>
             </details>

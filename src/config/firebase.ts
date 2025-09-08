@@ -87,8 +87,26 @@ export const onFCMessage = (callback: (payload: any) => void) => {
 export const isFCMSupported = (): boolean => {
   if (typeof window === 'undefined') return false;
   
+  // Vérifier le contexte sécurisé (HTTPS ou localhost)
+  if (!window.isSecureContext && !window.location.hostname.includes('localhost')) {
+    console.warn('FCM nécessite un contexte sécurisé (HTTPS)');
+    return false;
+  }
+  
   // Vérifier les APIs de base
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+  if (!('serviceWorker' in navigator)) {
+    console.warn('Service Worker non supporté');
+    return false;
+  }
+  
+  if (!('PushManager' in window)) {
+    console.warn('Push Manager non supporté');
+    return false;
+  }
+  
+  // Vérifier si les notifications sont supportées
+  if (!('Notification' in window)) {
+    console.warn('Notifications non supportées par ce navigateur');
     return false;
   }
   
@@ -98,10 +116,15 @@ export const isFCMSupported = (): boolean => {
     return false;
   }
   
-  // Vérifier si les notifications sont supportées
-  if (!('Notification' in window)) {
-    console.warn('Notifications non supportées par ce navigateur');
-    return false;
+  // Vérifier la version du navigateur pour les mobiles
+  const userAgent = navigator.userAgent;
+  if (userAgent.includes('iPhone') || userAgent.includes('iPad')) {
+    // iOS nécessite une version récente
+    const iosVersion = userAgent.match(/OS (\d+)_/);
+    if (iosVersion && parseInt(iosVersion[1]) < 16) {
+      console.warn('iOS version trop ancienne pour FCM');
+      return false;
+    }
   }
   
   return true;

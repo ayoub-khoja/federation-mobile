@@ -26,21 +26,37 @@ export const useFCMNotifications = () => {
   useEffect(() => {
     // Vérifier si FCM est supporté
     const supported = isFCMSupported();
-    console.log('🔍 Vérification du support FCM:', {
+    const debugInfo = {
       supported,
       serviceWorker: typeof window !== 'undefined' && 'serviceWorker' in navigator,
       pushManager: typeof window !== 'undefined' && 'PushManager' in window,
-      notification: typeof window !== 'undefined' && 'Notification' in window
-    });
+      notification: typeof window !== 'undefined' && 'Notification' in window,
+      secureContext: typeof window !== 'undefined' && window.isSecureContext,
+      hostname: typeof window !== 'undefined' ? window.location.hostname : 'unknown'
+    };
+    
+    console.log('🔍 Vérification du support FCM:', debugInfo);
     
     if (supported) {
       setState(prev => ({ ...prev, isSupported: true }));
       checkExistingSubscription();
     } else {
+      let errorMessage = 'Firebase Cloud Messaging n\'est pas supporté';
+      
+      if (!debugInfo.secureContext && !debugInfo.hostname.includes('localhost')) {
+        errorMessage = 'FCM nécessite HTTPS en production. Utilisez localhost pour les tests.';
+      } else if (!debugInfo.serviceWorker) {
+        errorMessage = 'Service Worker non supporté par ce navigateur';
+      } else if (!debugInfo.pushManager) {
+        errorMessage = 'Push Manager non supporté par ce navigateur';
+      } else if (!debugInfo.notification) {
+        errorMessage = 'Notifications non supportées par ce navigateur';
+      }
+      
       setState(prev => ({ 
         ...prev, 
         isSupported: false,
-        error: 'Firebase Cloud Messaging n\'est pas supporté par ce navigateur'
+        error: errorMessage
       }));
     }
   }, []);

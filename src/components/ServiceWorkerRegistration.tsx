@@ -27,6 +27,15 @@ export function ServiceWorkerRegistration() {
 
     (async () => {
       try {
+        // Désenregistrer l'ancien service worker s'il existe
+        const existingRegistrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of existingRegistrations) {
+          if (registration.scope.includes('/sw.js')) {
+            await registration.unregister();
+            console.log("🧹 Ancien service worker désenregistré");
+          }
+        }
+
         // Enregistrer le service worker Firebase pour les notifications
         const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js", { scope: "/" });
         console.log("✅ Service Worker Firebase enregistré:", reg.scope);
