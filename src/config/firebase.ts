@@ -99,7 +99,11 @@ export const isFCMSupported = (): boolean => {
     return false;
   }
   
-  if (!('PushManager' in window)) {
+  // Vérifier PushManager - peut être dans window ou dans ServiceWorkerRegistration
+  const hasPushManager = 'PushManager' in window || 
+                        ('serviceWorker' in navigator && 'PushManager' in ServiceWorkerRegistration.prototype);
+  
+  if (!hasPushManager) {
     console.warn('Push Manager non supporté');
     return false;
   }
@@ -118,12 +122,31 @@ export const isFCMSupported = (): boolean => {
   
   // Vérifier la version du navigateur pour les mobiles
   const userAgent = navigator.userAgent;
-  if (userAgent.includes('iPhone') || userAgent.includes('iPad')) {
-    // iOS nécessite une version récente
-    const iosVersion = userAgent.match(/OS (\d+)_/);
-    if (iosVersion && parseInt(iosVersion[1]) < 16) {
-      console.warn('iOS version trop ancienne pour FCM');
-      return false;
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+  
+  if (isMobile) {
+    // Sur mobile, vérifier la version du navigateur
+    if (userAgent.includes('iPhone') || userAgent.includes('iPad')) {
+      // iOS nécessite une version récente
+      const iosVersion = userAgent.match(/OS (\d+)_/);
+      if (iosVersion && parseInt(iosVersion[1]) < 16) {
+        console.warn('iOS version trop ancienne pour FCM');
+        return false;
+      }
+    } else if (userAgent.includes('Android')) {
+      // Android nécessite Chrome 50+ ou Firefox 44+
+      const chromeMatch = userAgent.match(/Chrome\/(\d+)/);
+      const firefoxMatch = userAgent.match(/Firefox\/(\d+)/);
+      
+      if (chromeMatch && parseInt(chromeMatch[1]) < 50) {
+        console.warn('Chrome version trop ancienne pour FCM');
+        return false;
+      }
+      
+      if (firefoxMatch && parseInt(firefoxMatch[1]) < 44) {
+        console.warn('Firefox version trop ancienne pour FCM');
+        return false;
+      }
     }
   }
   

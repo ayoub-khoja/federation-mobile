@@ -48,10 +48,14 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
               <summary className="cursor-pointer font-medium">Détails techniques</summary>
               <div className="mt-1 space-y-1">
                 <p>• Service Worker: {typeof window !== 'undefined' && 'serviceWorker' in navigator ? '✅' : '❌'}</p>
-                <p>• Push Manager: {typeof window !== 'undefined' && 'PushManager' in window ? '✅' : '❌'}</p>
+                <p>• Push Manager: {typeof window !== 'undefined' && (
+                  'PushManager' in window || 
+                  ('serviceWorker' in navigator && 'PushManager' in ServiceWorkerRegistration.prototype)
+                ) ? '✅' : '❌'}</p>
                 <p>• Notifications: {typeof window !== 'undefined' && 'Notification' in window ? '✅' : '❌'}</p>
                 <p>• Contexte sécurisé: {typeof window !== 'undefined' && window.isSecureContext ? '✅' : '❌'}</p>
                 <p>• Hostname: {typeof window !== 'undefined' ? window.location.hostname : '❌'}</p>
+                <p>• Appareil mobile: {typeof window !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? '✅' : '❌'}</p>
                 <p>• Firebase: {typeof window !== 'undefined' ? 'Vérification...' : '❌'}</p>
               </div>
             </details>

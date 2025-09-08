@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFCMNotifications } from '../hooks/useFCMNotifications';
 import { getFCMToken } from '../config/firebase';
+import { MobileFCMDiagnostic } from './MobileFCMDiagnostic';
 
 export const FCMTest: React.FC = () => {
   const {
@@ -84,6 +85,9 @@ export const FCMTest: React.FC = () => {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Test des Notifications FCM</h1>
       
+      {/* Diagnostic mobile avancé */}
+      <MobileFCMDiagnostic />
+
       {/* Informations de débogage */}
       <div className="bg-gray-50 rounded-lg p-4">
         <h2 className="text-lg font-semibold mb-3">Informations de débogage</h2>

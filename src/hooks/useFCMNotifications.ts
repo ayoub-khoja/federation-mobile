@@ -26,13 +26,23 @@ export const useFCMNotifications = () => {
   useEffect(() => {
     // Vérifier si FCM est supporté
     const supported = isFCMSupported();
+    
+    // Détection plus précise pour mobile
+    const isMobile = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const hasPushManager = typeof window !== 'undefined' && (
+      'PushManager' in window || 
+      ('serviceWorker' in navigator && 'PushManager' in ServiceWorkerRegistration.prototype)
+    );
+    
     const debugInfo = {
       supported,
       serviceWorker: typeof window !== 'undefined' && 'serviceWorker' in navigator,
-      pushManager: typeof window !== 'undefined' && 'PushManager' in window,
+      pushManager: hasPushManager,
       notification: typeof window !== 'undefined' && 'Notification' in window,
       secureContext: typeof window !== 'undefined' && window.isSecureContext,
-      hostname: typeof window !== 'undefined' ? window.location.hostname : 'unknown'
+      hostname: typeof window !== 'undefined' ? window.location.hostname : 'unknown',
+      isMobile,
+      userAgent: typeof window !== 'undefined' ? navigator.userAgent : 'unknown'
     };
     
     console.log('🔍 Vérification du support FCM:', debugInfo);
@@ -48,9 +58,17 @@ export const useFCMNotifications = () => {
       } else if (!debugInfo.serviceWorker) {
         errorMessage = 'Service Worker non supporté par ce navigateur';
       } else if (!debugInfo.pushManager) {
-        errorMessage = 'Push Manager non supporté par ce navigateur';
+        if (isMobile) {
+          errorMessage = 'Push Manager non supporté sur cet appareil mobile. Essayez Chrome ou Firefox récent.';
+        } else {
+          errorMessage = 'Push Manager non supporté par ce navigateur';
+        }
       } else if (!debugInfo.notification) {
-        errorMessage = 'Notifications non supportées par ce navigateur';
+        if (isMobile) {
+          errorMessage = 'Notifications non supportées sur cet appareil mobile. Vérifiez les paramètres du navigateur.';
+        } else {
+          errorMessage = 'Notifications non supportées par ce navigateur';
+        }
       }
       
       setState(prev => ({ 
