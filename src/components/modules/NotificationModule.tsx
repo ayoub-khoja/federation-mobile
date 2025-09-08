@@ -108,7 +108,7 @@ export default function NotificationModule({ isRtl, homeT }: NotificationModuleP
           <PushNotificationManager 
             userId={1} // Vous pouvez passer l'ID utilisateur depuis le contexte
             isEnabled={pushNotificationsEnabled}
-            onToggle={setPushNotificationsEnabled}
+            onToggleAction={setPushNotificationsEnabled}
           />
         </div>
 
