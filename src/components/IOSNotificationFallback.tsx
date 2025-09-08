@@ -83,7 +83,7 @@ export const IOSNotificationFallback: React.FC<IOSNotificationFallbackProps> = (
               <div className="text-xs text-blue-600">
                 <p>• <strong>Option 1 :</strong> Utilisez Chrome ou Firefox sur iOS</p>
                 <p>• <strong>Option 2 :</strong> Ajoutez l'app à l'écran d'accueil (mode PWA)</p>
-                <p>• <strong>Option 3 :</strong> Activez les notifications dans Réglages > Safari > Notifications</p>
+                <p>• <strong>Option 3 :</strong> Activez les notifications dans Réglages &gt; Safari &gt; Notifications</p>
               </div>
             </div>
           </div>
