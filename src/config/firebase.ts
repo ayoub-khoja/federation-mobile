@@ -136,20 +136,19 @@ export const isFCMSupported = (): boolean => {
         return false;
       }
       
-      // Sur iOS Safari, vérifier si c'est une PWA
+      // Sur iOS Safari, essayer d'activer les notifications même sans PWA
       if (isSafari) {
         // Vérifier si l'app est en mode PWA (ajoutée à l'écran d'accueil)
         const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                      (window.navigator as any).standalone === true ||
                      document.referrer.includes('android-app://');
         
-        if (!isPWA) {
-          console.warn('iOS Safari ne supporte pas FCM. Utilisez Chrome, Firefox ou ajoutez l\'app à l\'écran d\'accueil.');
-          return false;
+        if (isPWA) {
+          console.log('Mode PWA détecté sur iOS, tentative d\'activation des notifications');
+        } else {
+          // Même sans PWA, essayer d'activer les notifications sur iOS Safari récent
+          console.log('iOS Safari détecté, tentative d\'activation des notifications (peut être limitée)');
         }
-        
-        // En mode PWA, iOS peut supporter les notifications avec des limitations
-        console.log('Mode PWA détecté sur iOS, tentative d\'activation des notifications');
       }
     } else if (userAgent.includes('Android')) {
       // Android nécessite Chrome 50+ ou Firefox 44+

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useFCMNotifications } from '../hooks/useFCMNotifications';
 import { getFCMToken } from '../config/firebase';
 import { PWAInstallGuide } from './PWAInstallGuide';
+import { IOSNotificationFallback } from './IOSNotificationFallback';
 
 export const FCMTest: React.FC = () => {
   const {
@@ -20,6 +21,7 @@ export const FCMTest: React.FC = () => {
   const [debugInfo, setDebugInfo] = useState<any>({});
   const [testMessage, setTestMessage] = useState('');
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     // Vérifier si on est côté client
@@ -89,6 +91,14 @@ export const FCMTest: React.FC = () => {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Test des Notifications FCM</h1>
       
+      {/* Fallback iOS Safari */}
+      <IOSNotificationFallback 
+        onNotificationRequest={() => {
+          setRefreshKey(prev => prev + 1);
+          window.location.reload();
+        }}
+      />
+
       {/* Diagnostic mobile simplifié */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -104,7 +114,9 @@ export const FCMTest: React.FC = () => {
               <p><strong>Mode PWA:</strong> {typeof window !== 'undefined' && (
                 window.matchMedia('(display-mode: standalone)').matches || 
                 (window.navigator as any).standalone === true ||
-                document.referrer.includes('android-app://')
+                document.referrer.includes('android-app://') ||
+                window.location.search.includes('pwa=true') ||
+                localStorage.getItem('pwa_installed') === 'true'
               ) ? '✅ Oui' : '❌ Non'}</p>
               <p><strong>Hostname:</strong> {typeof window !== 'undefined' ? window.location.hostname : 'Inconnu'}</p>
               <p><strong>Contexte sécurisé:</strong> {typeof window !== 'undefined' && window.isSecureContext ? '✅ Oui' : '❌ Non'}</p>

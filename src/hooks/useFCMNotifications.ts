@@ -34,9 +34,14 @@ export const useFCMNotifications = () => {
     const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
+    // Détection PWA améliorée pour iOS
     const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                   (window.navigator as any).standalone === true ||
-                  document.referrer.includes('android-app://');
+                  document.referrer.includes('android-app://') ||
+                  // Détection PWA iOS alternative
+                  (window.navigator as any).standalone === true ||
+                  window.location.search.includes('pwa=true') ||
+                  localStorage.getItem('pwa_installed') === 'true';
     const hasPushManager = 'PushManager' in window || 
                           ('serviceWorker' in navigator && 'PushManager' in ServiceWorkerRegistration.prototype);
     
@@ -65,20 +70,16 @@ export const useFCMNotifications = () => {
       } else if (!debugInfo.serviceWorker) {
         errorMessage = 'Service Worker non supporté par ce navigateur';
       } else if (!debugInfo.pushManager) {
-        if (isIOS && isSafari && !isPWA) {
-          errorMessage = 'iOS Safari ne supporte pas les notifications push. Ajoutez l\'app à l\'écran d\'accueil ou utilisez Chrome/Firefox.';
-        } else if (isIOS && isSafari && isPWA) {
-          errorMessage = 'Notifications non disponibles en mode PWA sur iOS. Essayez Chrome ou Firefox.';
+        if (isIOS && isSafari) {
+          errorMessage = 'iOS Safari a des limitations pour les notifications push. Essayez Chrome ou Firefox, ou ajoutez l\'app à l\'écran d\'accueil.';
         } else if (isMobile) {
           errorMessage = 'Push Manager non supporté sur cet appareil mobile. Essayez Chrome ou Firefox récent.';
         } else {
           errorMessage = 'Push Manager non supporté par ce navigateur';
         }
       } else if (!debugInfo.notification) {
-        if (isIOS && isSafari && !isPWA) {
-          errorMessage = 'iOS Safari ne supporte pas les notifications push. Ajoutez l\'app à l\'écran d\'accueil ou utilisez Chrome/Firefox.';
-        } else if (isIOS && isSafari && isPWA) {
-          errorMessage = 'Notifications non disponibles en mode PWA sur iOS. Essayez Chrome ou Firefox.';
+        if (isIOS && isSafari) {
+          errorMessage = 'iOS Safari a des limitations pour les notifications. Essayez Chrome ou Firefox, ou ajoutez l\'app à l\'écran d\'accueil.';
         } else if (isMobile) {
           errorMessage = 'Notifications non supportées sur cet appareil mobile. Vérifiez les paramètres du navigateur.';
         } else {
