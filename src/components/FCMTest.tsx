@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFCMNotifications } from '../hooks/useFCMNotifications';
 import { getFCMToken } from '../config/firebase';
+import { PWAInstallGuide } from './PWAInstallGuide';
 
 export const FCMTest: React.FC = () => {
   const {
@@ -18,6 +19,7 @@ export const FCMTest: React.FC = () => {
 
   const [debugInfo, setDebugInfo] = useState<any>({});
   const [testMessage, setTestMessage] = useState('');
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
 
   useEffect(() => {
     // Vérifier si on est côté client
@@ -99,6 +101,11 @@ export const FCMTest: React.FC = () => {
             <h4 className="font-medium text-gray-900 mb-2">Informations de l'appareil</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
               <p><strong>Appareil:</strong> {typeof window !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'}</p>
+              <p><strong>Mode PWA:</strong> {typeof window !== 'undefined' && (
+                window.matchMedia('(display-mode: standalone)').matches || 
+                (window.navigator as any).standalone === true ||
+                document.referrer.includes('android-app://')
+              ) ? '✅ Oui' : '❌ Non'}</p>
               <p><strong>Hostname:</strong> {typeof window !== 'undefined' ? window.location.hostname : 'Inconnu'}</p>
               <p><strong>Contexte sécurisé:</strong> {typeof window !== 'undefined' && window.isSecureContext ? '✅ Oui' : '❌ Non'}</p>
               <p><strong>User Agent:</strong> {typeof window !== 'undefined' ? navigator.userAgent.substring(0, 50) + '...' : 'Inconnu'}</p>
@@ -138,11 +145,18 @@ export const FCMTest: React.FC = () => {
               {typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent) && /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent) && (
                 <div className="bg-yellow-100 border border-yellow-300 rounded p-3 mb-2">
                   <p className="font-medium text-yellow-800">⚠️ iOS Safari détecté</p>
-                  <p className="text-yellow-700">iOS Safari ne supporte pas les notifications push FCM. Pour recevoir des notifications :</p>
+                  <p className="text-yellow-700">Pour recevoir des notifications sur iOS :</p>
                   <ul className="list-disc list-inside mt-1 space-y-1">
-                    <li>Téléchargez Chrome ou Firefox sur l'App Store</li>
-                    <li>Ouvrez cette page dans Chrome ou Firefox</li>
-                    <li>Activez les notifications dans le navigateur</li>
+                    <li><strong>Option 1 (PWA) :</strong> 
+                      <button 
+                        onClick={() => setShowInstallGuide(true)}
+                        className="text-blue-600 underline ml-1"
+                      >
+                        Guide d'installation PWA
+                      </button>
+                    </li>
+                    <li><strong>Option 2 (Navigateur) :</strong> Téléchargez Chrome ou Firefox sur l'App Store</li>
+                    <li>Activez les notifications dans les paramètres du navigateur</li>
                   </ul>
                 </div>
               )}
@@ -266,6 +280,12 @@ export const FCMTest: React.FC = () => {
           <strong>User Agent:</strong> {debugInfo.userAgent}
         </p>
       </div>
+
+      {/* Guide d'installation PWA */}
+      <PWAInstallGuide 
+        isVisible={showInstallGuide}
+        onCloseAction={() => setShowInstallGuide(false)}
+      />
     </div>
   );
 };

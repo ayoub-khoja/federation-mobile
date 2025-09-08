@@ -35,6 +35,11 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
   if (!isSupported) {
     const isIOS = typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent);
     const isSafari = typeof window !== 'undefined' && /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
+    const isPWA = typeof window !== 'undefined' && (
+      window.matchMedia('(display-mode: standalone)').matches || 
+      (window.navigator as any).standalone === true ||
+      document.referrer.includes('android-app://')
+    );
     
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -47,13 +52,18 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
             {isIOS && isSafari ? (
               <div className="mt-2">
                 <p className="text-xs mb-2">
-                  iOS Safari ne supporte pas les notifications push FCM. Pour recevoir des notifications :
+                  {isPWA 
+                    ? 'Mode PWA détecté sur iOS. Les notifications peuvent ne pas fonctionner parfaitement.'
+                    : 'iOS Safari ne supporte pas les notifications push FCM. Pour recevoir des notifications :'
+                  }
                 </p>
-                <ul className="text-xs list-disc list-inside space-y-1">
-                  <li>Téléchargez Chrome ou Firefox sur l'App Store</li>
-                  <li>Ouvrez cette page dans Chrome ou Firefox</li>
-                  <li>Activez les notifications dans le navigateur</li>
-                </ul>
+                {!isPWA && (
+                  <ul className="text-xs list-disc list-inside space-y-1">
+                    <li><strong>Option 1 (PWA) :</strong> Ajoutez cette app à l'écran d'accueil</li>
+                    <li><strong>Option 2 (Navigateur) :</strong> Téléchargez Chrome ou Firefox</li>
+                    <li>Activez les notifications dans le navigateur</li>
+                  </ul>
+                )}
               </div>
             ) : (
               <p className="text-xs mt-1">
@@ -72,6 +82,7 @@ export const PushNotificationManager: React.FC<PushNotificationManagerProps> = (
                 <p>• Contexte sécurisé: {typeof window !== 'undefined' && window.isSecureContext ? '✅' : '❌'}</p>
                 <p>• Hostname: {typeof window !== 'undefined' ? window.location.hostname : '❌'}</p>
                 <p>• Appareil mobile: {typeof window !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? '✅' : '❌'}</p>
+                <p>• Mode PWA: {isPWA ? '✅' : '❌'}</p>
                 <p>• iOS Safari: {isIOS && isSafari ? '✅' : '❌'}</p>
                 <p>• Firebase: {typeof window !== 'undefined' ? 'Vérification...' : '❌'}</p>
               </div>
