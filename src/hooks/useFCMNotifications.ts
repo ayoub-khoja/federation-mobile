@@ -24,25 +24,26 @@ export const useFCMNotifications = () => {
   });
 
   useEffect(() => {
+    // Vérifier si on est côté client
+    if (typeof window === 'undefined') return;
+    
     // Vérifier si FCM est supporté
     const supported = isFCMSupported();
     
     // Détection plus précise pour mobile
-    const isMobile = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const hasPushManager = typeof window !== 'undefined' && (
-      'PushManager' in window || 
-      ('serviceWorker' in navigator && 'PushManager' in ServiceWorkerRegistration.prototype)
-    );
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const hasPushManager = 'PushManager' in window || 
+                          ('serviceWorker' in navigator && 'PushManager' in ServiceWorkerRegistration.prototype);
     
     const debugInfo = {
       supported,
-      serviceWorker: typeof window !== 'undefined' && 'serviceWorker' in navigator,
+      serviceWorker: 'serviceWorker' in navigator,
       pushManager: hasPushManager,
-      notification: typeof window !== 'undefined' && 'Notification' in window,
-      secureContext: typeof window !== 'undefined' && window.isSecureContext,
-      hostname: typeof window !== 'undefined' ? window.location.hostname : 'unknown',
+      notification: 'Notification' in window,
+      secureContext: window.isSecureContext,
+      hostname: window.location.hostname,
       isMobile,
-      userAgent: typeof window !== 'undefined' ? navigator.userAgent : 'unknown'
+      userAgent: navigator.userAgent
     };
     
     console.log('🔍 Vérification du support FCM:', debugInfo);

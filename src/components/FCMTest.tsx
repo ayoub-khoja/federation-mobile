@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useFCMNotifications } from '../hooks/useFCMNotifications';
 import { getFCMToken } from '../config/firebase';
-import { MobileFCMDiagnostic } from './MobileFCMDiagnostic';
 
 export const FCMTest: React.FC = () => {
   const {
@@ -21,6 +20,9 @@ export const FCMTest: React.FC = () => {
   const [testMessage, setTestMessage] = useState('');
 
   useEffect(() => {
+    // Vérifier si on est côté client
+    if (typeof window === 'undefined') return;
+    
     // Collecter les informations de débogage
     const info = {
       userAgent: navigator.userAgent,
@@ -30,7 +32,7 @@ export const FCMTest: React.FC = () => {
       notification: 'Notification' in window,
       localStorage: typeof Storage !== 'undefined',
       fcmToken: localStorage.getItem('fcm_token'),
-      notificationPermission: Notification.permission
+      notificationPermission: 'Notification' in window ? Notification.permission : 'unknown'
     };
     setDebugInfo(info);
   }, []);
@@ -85,8 +87,70 @@ export const FCMTest: React.FC = () => {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Test des Notifications FCM</h1>
       
-      {/* Diagnostic mobile avancé */}
-      <MobileFCMDiagnostic />
+      {/* Diagnostic mobile simplifié */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          📱 Diagnostic Mobile FCM
+        </h2>
+        
+        <div className="space-y-4">
+          {/* Informations de base */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 mb-2">Informations de l'appareil</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+              <p><strong>Appareil:</strong> {typeof window !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'}</p>
+              <p><strong>Hostname:</strong> {typeof window !== 'undefined' ? window.location.hostname : 'Inconnu'}</p>
+              <p><strong>Contexte sécurisé:</strong> {typeof window !== 'undefined' && window.isSecureContext ? '✅ Oui' : '❌ Non'}</p>
+              <p><strong>User Agent:</strong> {typeof window !== 'undefined' ? navigator.userAgent.substring(0, 50) + '...' : 'Inconnu'}</p>
+            </div>
+          </div>
+
+          {/* Vérifications techniques */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 mb-2">Vérifications techniques</h4>
+            <div className="space-y-1 text-sm">
+              <p className="flex items-center">
+                <span className="mr-2">{typeof window !== 'undefined' && 'serviceWorker' in navigator ? '✅' : '❌'}</span>
+                <span>Service Worker</span>
+              </p>
+              <p className="flex items-center">
+                <span className="mr-2">{typeof window !== 'undefined' && (
+                  'PushManager' in window || 
+                  ('serviceWorker' in navigator && 'PushManager' in ServiceWorkerRegistration.prototype)
+                ) ? '✅' : '❌'}</span>
+                <span>Push Manager</span>
+              </p>
+              <p className="flex items-center">
+                <span className="mr-2">{typeof window !== 'undefined' && 'Notification' in window ? '✅' : '❌'}</span>
+                <span>Notifications</span>
+              </p>
+              <p className="flex items-center">
+                <span className="mr-2">{typeof window !== 'undefined' && window.isSecureContext ? '✅' : '❌'}</span>
+                <span>Contexte sécurisé (HTTPS)</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Recommandations */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="font-medium text-blue-900 mb-2">Recommandations</h4>
+            <div className="text-sm text-blue-800 space-y-1">
+              {typeof window !== 'undefined' && !('serviceWorker' in navigator) && (
+                <p>• Utilisez un navigateur moderne (Chrome, Firefox, Safari, Edge)</p>
+              )}
+              {typeof window !== 'undefined' && !('PushManager' in window) && (
+                <p>• Sur mobile, essayez Chrome ou Firefox récent</p>
+              )}
+              {typeof window !== 'undefined' && !('Notification' in window) && (
+                <p>• Activez les notifications dans les paramètres du navigateur</p>
+              )}
+              {typeof window !== 'undefined' && !window.isSecureContext && (
+                <p>• FCM nécessite HTTPS en production</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Informations de débogage */}
       <div className="bg-gray-50 rounded-lg p-4">
