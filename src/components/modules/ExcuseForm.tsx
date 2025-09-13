@@ -47,21 +47,30 @@ export default function ExcuseForm({ isRtl, homeT, onBack }: ExcuseFormProps) {
   useEffect(() => {
     const fetchUsedDates = async () => {
       try {
-        const accessToken = localStorage.getItem('access_token');
+        const accessToken = localStorage.getItem("access_token");
         if (!accessToken) return;
 
-        const response = await fetch('/api/excuses/history/', {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-          },
-        });
+        // Utiliser l'URL backend directe
+        const backendUrl =
+          process.env.NODE_ENV === "production"
+            ? "https://federation-backend.onrender.com"
+            : "http://localhost:8000";
+
+        const response = await fetch(
+          `${backendUrl}/api/accounts/arbitres/excuses/`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.excuses) {
             const dates = data.excuses.map((excuse: any) => ({
               start: excuse.date_debut,
-              end: excuse.date_fin
+              end: excuse.date_fin,
             }));
             setUsedDates(dates);
           }
@@ -181,48 +190,57 @@ export default function ExcuseForm({ isRtl, homeT, onBack }: ExcuseFormProps) {
 
     setIsSubmitting(true);
     try {
-      const accessToken = localStorage.getItem('access_token');
+      const accessToken = localStorage.getItem("access_token");
       if (!accessToken) {
-        alert('Token d\'authentification non trouvé');
+        alert("Token d'authentification non trouvé");
         return;
       }
 
       // Créer FormData pour supporter les fichiers
       const formDataToSend = new FormData();
-      formDataToSend.append('arbitre_nom', formData.arbitre_nom);
-      formDataToSend.append('arbitre_prenom', formData.arbitre_prenom);
-      formDataToSend.append('date_debut', formData.date_debut);
-      formDataToSend.append('date_fin', formData.date_fin);
-      formDataToSend.append('cause', formData.cause);
-      
+      formDataToSend.append("arbitre_nom", formData.arbitre_nom);
+      formDataToSend.append("arbitre_prenom", formData.arbitre_prenom);
+      formDataToSend.append("date_debut", formData.date_debut);
+      formDataToSend.append("date_fin", formData.date_fin);
+      formDataToSend.append("cause", formData.cause);
+
       if (formData.piece_jointe) {
-        formDataToSend.append('piece_jointe', formData.piece_jointe);
+        formDataToSend.append("piece_jointe", formData.piece_jointe);
       }
 
-      const response = await fetch('/api/excuses/create/', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          // Ne pas définir Content-Type pour FormData
-        },
-        body: formDataToSend,
-      });
+      // Utiliser l'URL backend directe
+      const backendUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://federation-backend.onrender.com"
+          : "http://localhost:8000";
+
+      const response = await fetch(
+        `${backendUrl}/api/accounts/arbitres/excuses/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            // Ne pas définir Content-Type pour FormData
+          },
+          body: formDataToSend,
+        }
+      );
 
       const result = await response.json();
 
       if (result.success) {
-        alert('Excuse ajoutée avec succès !');
+        alert("Excuse ajoutée avec succès !");
         onBack();
       } else {
         // Gérer les erreurs du serveur
         if (result.error) {
-          if (typeof result.error === 'string') {
+          if (typeof result.error === "string") {
             setErrors({ general: result.error });
-          } else if (typeof result.error === 'object') {
+          } else if (typeof result.error === "object") {
             setErrors(result.error);
           }
         } else {
-          setErrors({ general: 'Erreur lors de l\'ajout de l\'excuse' });
+          setErrors({ general: "Erreur lors de l'ajout de l'excuse" });
         }
       }
     } catch (error) {

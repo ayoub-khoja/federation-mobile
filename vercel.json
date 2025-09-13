@@ -22,8 +22,32 @@
       }
     },
     {
-      "src": "/api/(.*)",
-      "dest": "https://federation-backend.onrender.com/api/$1"
+      "src": "/api/accounts/auth/(.*)",
+      "dest": "https://federation-backend.onrender.com/api/accounts/auth/$1"
+    },
+    {
+      "src": "/api/accounts/fcm/(.*)",
+      "dest": "https://federation-backend.onrender.com/api/accounts/fcm/$1"
+    },
+    {
+      "src": "/api/accounts/push/(.*)",
+      "dest": "https://federation-backend.onrender.com/api/accounts/push/$1"
+    },
+    {
+      "src": "/api/accounts/arbitres/profile/(.*)",
+      "dest": "https://federation-backend.onrender.com/api/accounts/arbitres/profile/$1"
+    },
+    {
+      "src": "/api/arbitres/(.*)",
+      "dest": "https://federation-backend.onrender.com/api/arbitres/$1"
+    },
+    {
+      "src": "/api/test/(.*)",
+      "dest": "https://federation-backend.onrender.com/api/test/$1"
+    },
+    {
+      "src": "/api/notifications/(.*)",
+      "dest": "https://federation-backend.onrender.com/api/notifications/$1"
     }
   ],
   "env": {

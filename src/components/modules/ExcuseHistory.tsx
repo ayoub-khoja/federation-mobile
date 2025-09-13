@@ -112,17 +112,17 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
           className="flex items-center space-x-2 text-white hover:text-gray-200 transition-colors"
         >
           <span className="text-2xl">←</span>
-          <span className={`text-lg font-medium ${isRtl ? 'font-arabic' : ''}`}>
+          <span className={`text-lg font-medium ${isRtl ? "font-arabic" : ""}`}>
             Retour
           </span>
         </button>
-        
+
         <button
           onClick={refreshExcuses}
           className="flex items-center space-x-2 text-white hover:text-gray-200 transition-colors"
         >
           <span className="text-lg">🔄</span>
-          <span className={`text-sm ${isRtl ? 'font-arabic' : ''}`}>
+          <span className={`text-sm ${isRtl ? "font-arabic" : ""}`}>
             Actualiser
           </span>
         </button>
@@ -130,44 +130,14 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
 
       {/* Titre */}
       <div className="text-center mb-6">
-        <h1 className={`text-3xl font-bold text-white mb-2 drop-shadow-lg ${isRtl ? 'font-arabic' : ''}`}>
+        <h1
+          className={`text-3xl font-bold text-white mb-2 drop-shadow-lg ${
+            isRtl ? "font-arabic" : ""
+          }`}
+        >
           Historique des excuses
         </h1>
         <div className="w-24 h-1 bg-white/50 mx-auto rounded-full"></div>
-      </div>
-
-      {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="glass rounded-2xl shadow-ftf overflow-hidden animate-fadeInUp">
-          <div className="p-4 text-center">
-            <div className="text-2xl font-bold text-white mb-1">{excuses.length}</div>
-            <div className={`text-sm text-white/80 ${isRtl ? 'font-arabic' : ''}`}>
-              Total excuses
-            </div>
-          </div>
-        </div>
-        
-        <div className="glass rounded-2xl shadow-ftf overflow-hidden animate-fadeInUp">
-          <div className="p-4 text-center">
-            <div className="text-2xl font-bold text-white mb-1">
-              {excuses.filter(e => e.status === 'en_attente').length}
-            </div>
-            <div className={`text-sm text-white/80 ${isRtl ? 'font-arabic' : ''}`}>
-              En attente
-            </div>
-          </div>
-        </div>
-        
-        <div className="glass rounded-2xl shadow-ftf overflow-hidden animate-fadeInUp">
-          <div className="p-4 text-center">
-            <div className="text-2xl font-bold text-white mb-1">
-              {excuses.filter(e => e.status === 'acceptee').length}
-            </div>
-            <div className={`text-sm text-white/80 ${isRtl ? 'font-arabic' : ''}`}>
-              Acceptées
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Liste des excuses */}
@@ -175,10 +145,14 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
         <div className="glass rounded-3xl shadow-ftf overflow-hidden animate-fadeInUp">
           <div className="p-8 text-center">
             <div className="text-gray-400 text-6xl mb-4">📝</div>
-            <h3 className={`text-xl font-semibold text-gray-600 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+            <h3
+              className={`text-xl font-semibold text-gray-600 mb-2 ${
+                isRtl ? "font-arabic" : ""
+              }`}
+            >
               Aucune excuse trouvée
             </h3>
-            <p className={`text-gray-500 ${isRtl ? 'font-arabic' : ''}`}>
+            <p className={`text-gray-500 ${isRtl ? "font-arabic" : ""}`}>
               Vous n'avez pas encore soumis d'excuses.
             </p>
           </div>
@@ -187,7 +161,7 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
         <div className="space-y-4">
           {excuses.map((excuse) => {
             const periodStatus = getPeriodStatus(excuse);
-            
+
             return (
               <div
                 key={excuse.id}
@@ -197,19 +171,33 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
                   {/* Header de l'excuse */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                      <span className="text-2xl">{getStatusIcon(excuse.status)}</span>
+                      <span className="text-2xl">
+                        {getStatusIcon(excuse.status)}
+                      </span>
                       <div>
-                        <div className={`text-lg font-bold text-gray-800 ${isRtl ? 'font-arabic' : ''}`}>
+                        <div
+                          className={`text-lg font-bold text-gray-800 ${
+                            isRtl ? "font-arabic" : ""
+                          }`}
+                        >
                           Excuse #{excuse.id}
                         </div>
-                        <div className={`text-sm text-gray-600 ${isRtl ? 'font-arabic' : ''}`}>
+                        <div
+                          className={`text-sm text-gray-600 ${
+                            isRtl ? "font-arabic" : ""
+                          }`}
+                        >
                           {excuse.arbitre_nom}
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="text-right">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(excuse.status)}`}>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          excuse.status
+                        )}`}
+                      >
                         {excuse.status_display}
                       </span>
                       <div className={`text-xs mt-1 ${periodStatus.color}`}>
@@ -220,7 +208,11 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
 
                   {/* Période */}
                   <div className="mb-4">
-                    <div className={`text-sm font-medium text-gray-700 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+                    <div
+                      className={`text-sm font-medium text-gray-700 mb-2 ${
+                        isRtl ? "font-arabic" : ""
+                      }`}
+                    >
                       Période d'absence
                     </div>
                     <div className="flex items-center space-x-4 text-sm text-gray-600">
@@ -235,17 +227,27 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
                       </div>
                       <div className="flex items-center space-x-1">
                         <span>⏱️</span>
-                        <span>({excuse.duree} jour{excuse.duree > 1 ? 's' : ''})</span>
+                        <span>
+                          ({excuse.duree} jour{excuse.duree > 1 ? "s" : ""})
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Cause */}
                   <div className="mb-4">
-                    <div className={`text-sm font-medium text-gray-700 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+                    <div
+                      className={`text-sm font-medium text-gray-700 mb-2 ${
+                        isRtl ? "font-arabic" : ""
+                      }`}
+                    >
                       Motif
                     </div>
-                    <p className={`text-sm text-gray-600 leading-relaxed ${isRtl ? 'font-arabic' : ''}`}>
+                    <p
+                      className={`text-sm text-gray-600 leading-relaxed ${
+                        isRtl ? "font-arabic" : ""
+                      }`}
+                    >
                       {excuse.cause}
                     </p>
                   </div>
@@ -253,7 +255,11 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
                   {/* Pièce jointe */}
                   {excuse.piece_jointe && (
                     <div className="mb-4">
-                      <div className={`text-sm font-medium text-gray-700 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+                      <div
+                        className={`text-sm font-medium text-gray-700 mb-2 ${
+                          isRtl ? "font-arabic" : ""
+                        }`}
+                      >
                         Pièce jointe
                       </div>
                       <a
@@ -271,11 +277,19 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
                   {/* Commentaire admin */}
                   {excuse.commentaire_admin && (
                     <div className="mb-4">
-                      <div className={`text-sm font-medium text-gray-700 mb-2 ${isRtl ? 'font-arabic' : ''}`}>
+                      <div
+                        className={`text-sm font-medium text-gray-700 mb-2 ${
+                          isRtl ? "font-arabic" : ""
+                        }`}
+                      >
                         Commentaire administrateur
                       </div>
                       <div className="bg-blue-50 p-3 rounded-lg">
-                        <p className={`text-sm text-blue-800 ${isRtl ? 'font-arabic' : ''}`}>
+                        <p
+                          className={`text-sm text-blue-800 ${
+                            isRtl ? "font-arabic" : ""
+                          }`}
+                        >
                           {excuse.commentaire_admin}
                         </p>
                       </div>
@@ -290,7 +304,7 @@ export default function ExcuseHistory({ isRtl, homeT, onBack }: ExcuseHistoryPro
                         <div>Traitée le {formatDateTime(excuse.traite_le)}</div>
                       )}
                     </div>
-                    
+
                     <div className="flex space-x-2">
                       {excuse.can_be_modified && (
                         <button className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors">

@@ -50,32 +50,45 @@ export const useExcuseHistory = () => {
       setIsLoading(true);
       setError(null);
 
-      const accessToken = localStorage.getItem('access_token');
+      const accessToken = localStorage.getItem("access_token");
       if (!accessToken) {
-        throw new Error('Token d\'authentification non trouvé');
+        throw new Error("Token d'authentification non trouvé");
       }
 
-      const response = await fetch('/api/excuses/history/', {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      });
+      // Utiliser l'URL backend directe
+      const backendUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://federation-backend.onrender.com"
+          : "http://localhost:8000";
+
+      const response = await fetch(
+        `${backendUrl}/api/accounts/arbitres/excuses/`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de la récupération des excuses');
+        throw new Error(
+          data.error || "Erreur lors de la récupération des excuses"
+        );
       }
 
       if (data.success && data.excuses) {
         setExcuses(data.excuses);
-        setPagination(data.pagination || {
-          current_page: 1,
-          total_pages: 1,
-          total_count: data.excuses.length,
-          has_next: false,
-          has_previous: false
-        });
+        setPagination(
+          data.pagination || {
+            current_page: 1,
+            total_pages: 1,
+            total_count: data.excuses.length,
+            has_next: false,
+            has_previous: false,
+          }
+        );
       } else {
         setExcuses([]);
       }

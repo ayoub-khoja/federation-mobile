@@ -56,14 +56,41 @@ const nextConfig = {
   },
 
   async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: isProd
-          ? 'https://federation-backend.onrender.com/api/:path*'
-          : 'http://localhost:8000/api/:path*',
-      },
-    ];
+    if (!isProd) {
+      // En développement, rediriger vers le backend local (sauf pour les excuses)
+      return [
+        {
+          source: '/api/accounts/auth/:path*',
+          destination: 'http://localhost:8000/api/accounts/auth/:path*',
+        },
+        {
+          source: '/api/accounts/fcm/:path*',
+          destination: 'http://localhost:8000/api/accounts/fcm/:path*',
+        },
+        {
+          source: '/api/accounts/push/:path*',
+          destination: 'http://localhost:8000/api/accounts/push/:path*',
+        },
+        {
+          source: '/api/accounts/arbitres/profile/:path*',
+          destination: 'http://localhost:8000/api/accounts/arbitres/profile/:path*',
+        },
+        {
+          source: '/api/arbitres/:path*',
+          destination: 'http://localhost:8000/api/arbitres/:path*',
+        },
+        {
+          source: '/api/test/:path*',
+          destination: 'http://localhost:8000/api/test/:path*',
+        },
+        {
+          source: '/api/notifications/:path*',
+          destination: 'http://localhost:8000/api/notifications/:path*',
+        },
+      ];
+    }
+    // En production, Vercel gère les redirections via vercel.json
+    return [];
   },
 };
 
