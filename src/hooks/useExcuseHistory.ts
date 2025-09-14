@@ -50,22 +50,61 @@ export const useExcuseHistory = () => {
       setIsLoading(true);
       setError(null);
 
-      const accessToken = localStorage.getItem("access_token");
-      if (!accessToken) {
-        throw new Error("Token d'authentification non trouvé");
-      }
-
       // Utiliser l'URL backend directe
       const backendUrl =
         process.env.NODE_ENV === "production"
           ? "https://federation-backend.onrender.com"
           : "http://localhost:8000";
 
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) {
+        throw new Error("Token d'authentification non trouvé");
+      }
+
+      // Vérifier si le token est expiré et le rafraîchir si nécessaire
+      let finalToken = accessToken;
+      try {
+        const payload = JSON.parse(atob(accessToken.split(".")[1]));
+        const isExpired = payload.exp < Math.floor(Date.now() / 1000);
+
+        if (isExpired) {
+          console.warn("⚠️ Token expiré, tentative de rafraîchissement...");
+
+          const refreshToken = localStorage.getItem("refresh_token");
+          if (refreshToken) {
+            const refreshResponse = await fetch(
+              `${backendUrl}/api/accounts/token/refresh/`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ refresh: refreshToken }),
+              }
+            );
+
+            if (refreshResponse.ok) {
+              const refreshData = await refreshResponse.json();
+              localStorage.setItem("access_token", refreshData.access);
+              finalToken = refreshData.access;
+              console.log("✅ Token rafraîchi avec succès");
+            } else {
+              throw new Error("Impossible de rafraîchir le token");
+            }
+          } else {
+            throw new Error("Aucun refresh token disponible");
+          }
+        }
+      } catch (tokenError) {
+        console.error("❌ Erreur de token:", tokenError);
+        throw new Error("Token invalide ou expiré");
+      }
+
       const response = await fetch(
         `${backendUrl}/api/accounts/arbitres/excuses/`,
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${finalToken}`,
           },
         }
       );

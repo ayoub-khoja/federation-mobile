@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from "next/image";
 import { useProfile } from '../../hooks/useProfile';
 import { useLigues } from '../../hooks/useLigues';
 import { GRADES } from '../../hooks/useRegistration';
@@ -271,17 +272,21 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
     <div className="glass rounded-3xl shadow-ftf overflow-hidden animate-fadeInUp">
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className={`text-3xl font-bold text-red-600 ${isRtl ? 'font-arabic' : ''}`}>
+          <h2
+            className={`text-3xl font-bold text-red-600 ${
+              isRtl ? "font-arabic" : ""
+            }`}
+          >
             {homeT.myProfile}
           </h2>
-          <button 
+          <button
             onClick={logout}
             className="text-red-600 hover:text-red-800 text-sm underline"
           >
             Se déconnecter
           </button>
         </div>
-        
+
         {/* Photo de profil et informations de base */}
         <div className="bg-white rounded-2xl p-6 mb-6 shadow-lg">
           <div className="flex flex-col md:flex-row gap-6">
@@ -290,19 +295,22 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
               <div className="relative">
                 <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center border-4 border-red-200 overflow-hidden">
                   {profile.profile_photo && !imageError ? (
-                    <img 
-                      src={profile.profile_photo.startsWith('http') 
-                        ? profile.profile_photo 
-                        : `${getBackendUrl()}${profile.profile_photo}`
-                      } 
-                      alt="Photo de profil" 
+                    <img
+                      src={
+                        profile.profile_photo.startsWith("http")
+                          ? profile.profile_photo
+                          : `${getBackendUrl()}${profile.profile_photo}`
+                      }
+                      alt="Photo de profil"
                       className="w-full h-full object-cover"
                       onError={() => {
-                        console.error('Erreur de chargement de l\'image de profil');
+                        console.error(
+                          "Erreur de chargement de l'image de profil"
+                        );
                         setImageError(true);
                       }}
                       onLoad={() => {
-                        console.log('Image de profil chargée avec succès');
+                        console.log("Image de profil chargée avec succès");
                         setImageError(false);
                       }}
                     />
@@ -310,20 +318,21 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                     <span className="text-4xl text-gray-400">👤</span>
                   )}
                 </div>
-                                 <button 
-                   onClick={() => setShowPhotoOptions(true)}
-                   className="absolute bottom-0 right-0 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
-                   disabled={isUploading}
-                 >
-                   <span className="text-sm">📷</span>
-                 </button>
+                <button
+                  onClick={() => setShowPhotoOptions(true)}
+                  className="absolute bottom-0 right-0 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                  disabled={isUploading}
+                >
+                  <span className="text-sm">📷</span>
+                </button>
               </div>
             </div>
-            
+
             {/* Informations à côté de l'image */}
             <div className="flex-1 text-center md:text-left">
               <h3 className="text-2xl font-bold text-gray-800 mb-3">
-                {profile.full_name || `${profile.first_name} ${profile.last_name}`}
+                {profile.full_name ||
+                  `${profile.first_name} ${profile.last_name}`}
               </h3>
               <div className="space-y-2 text-gray-600">
                 <p className="flex items-center justify-center md:justify-start gap-2">
@@ -337,7 +346,7 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
               </div>
             </div>
           </div>
-          
+
           {/* Informations détaillées sous l'image et les données */}
           <div className="mt-6 grid grid-cols-2 gap-4">
             {/* Carte Rôle */}
@@ -348,7 +357,11 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                 </div>
                 <div>
                   <h4 className="font-semibold text-blue-800 text-xs">Rôle</h4>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(profile.role)}`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(
+                      profile.role
+                    )}`}
+                  >
                     {getRoleDisplay(profile.role)}
                   </span>
                 </div>
@@ -362,9 +375,12 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                   <span className="text-white text-sm">🏆</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-purple-800 text-xs">Grade</h4>
+                  <h4 className="font-semibold text-purple-800 text-xs">
+                    Grade
+                  </h4>
                   <p className="text-purple-700 font-medium text-xs">
-                    {GRADES.find(g => g.value === profile.grade)?.label || profile.grade}
+                    {GRADES.find((g) => g.value === profile.grade)?.label ||
+                      profile.grade}
                   </p>
                 </div>
               </div>
@@ -378,10 +394,16 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                     <span className="text-white text-sm">📍</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-green-800 text-xs">Ligue</h4>
-                    <p className="text-green-700 font-medium text-xs">{profile.ligue_nom}</p>
+                    <h4 className="font-semibold text-green-800 text-xs">
+                      Ligue
+                    </h4>
+                    <p className="text-green-700 font-medium text-xs">
+                      {profile.ligue_nom}
+                    </p>
                     {profile.ligue_region && (
-                      <p className="text-green-600 text-xs">{profile.ligue_region}</p>
+                      <p className="text-green-600 text-xs">
+                        {profile.ligue_region}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -396,9 +418,11 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                     <span className="text-white text-sm">📅</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-orange-800 text-xs">Date de naissance</h4>
+                    <h4 className="font-semibold text-orange-800 text-xs">
+                      Date de naissance
+                    </h4>
                     <p className="text-orange-700 font-medium text-xs">
-                      {new Date(profile.birth_date).toLocaleDateString('fr-FR')}
+                      {new Date(profile.birth_date).toLocaleDateString("fr-FR")}
                     </p>
                   </div>
                 </div>
@@ -414,7 +438,9 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                   </div>
                   <div>
                     <h4 className="font-semibold text-pink-800 text-xs">Âge</h4>
-                    <p className="text-pink-700 font-medium text-xs">{getAge()} ans</p>
+                    <p className="text-pink-700 font-medium text-xs">
+                      {getAge()} ans
+                    </p>
                   </div>
                 </div>
               </div>
@@ -428,8 +454,12 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                     <span className="text-white text-sm">🏠</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-indigo-800 text-xs">Lieu de naissance</h4>
-                    <p className="text-indigo-700 font-medium text-xs">{profile.birth_place}</p>
+                    <h4 className="font-semibold text-indigo-800 text-xs">
+                      Lieu de naissance
+                    </h4>
+                    <p className="text-indigo-700 font-medium text-xs">
+                      {profile.birth_place}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -443,8 +473,12 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                     <span className="text-white text-sm">📍</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-teal-800 text-xs">Adresse</h4>
-                    <p className="text-teal-700 font-medium text-xs">{profile.address}</p>
+                    <h4 className="font-semibold text-teal-800 text-xs">
+                      Adresse
+                    </h4>
+                    <p className="text-teal-700 font-medium text-xs">
+                      {profile.address}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -458,8 +492,12 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                     <span className="text-white text-lg">🆔</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-amber-800 text-sm">Licence</h4>
-                    <p className="text-amber-700 font-medium">{profile.license_number}</p>
+                    <h4 className="font-semibold text-amber-800 text-sm">
+                      Licence
+                    </h4>
+                    <p className="text-amber-700 font-medium">
+                      {profile.license_number}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -474,17 +512,13 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                 <div>
                   <h4 className="font-semibold text-cyan-800 text-sm">CIN</h4>
                   <p className="text-cyan-700 font-medium">
-                    {(profile as any).cin || 'Non renseigné'}
+                    {(profile as any).cin || "Non renseigné"}
                   </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-
-
-
 
         {/* Boutons d'action */}
         <div className="flex gap-4 mt-8">
@@ -495,7 +529,7 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
             Modifier le profil
           </button>
           <button
-            onClick={() => router.push('/change-password')}
+            onClick={() => router.push("/change-password")}
             className="flex-1 bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
           >
             Modifier mot de passe
@@ -506,66 +540,95 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
         {isEditing && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              <h3 className="text-xl font-semibold mb-6 text-center">Modifier le profil</h3>
-              
+              <h3 className="text-xl font-semibold mb-6 text-center">
+                Modifier le profil
+              </h3>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Colonne 1 */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Prénom
+                    </label>
                     <input
                       type="text"
                       value={editData.first_name}
-                      onChange={(e) => setEditData({...editData, first_name: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({ ...editData, first_name: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nom
+                    </label>
                     <input
                       type="text"
                       value={editData.last_name}
-                      onChange={(e) => setEditData({...editData, last_name: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({ ...editData, last_name: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
                     <input
                       type="email"
                       value={editData.email}
-                      onChange={(e) => setEditData({...editData, email: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({ ...editData, email: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Téléphone
+                    </label>
                     <input
                       type="tel"
                       value={editData.phone_number}
-                      onChange={(e) => setEditData({...editData, phone_number: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          phone_number: e.target.value,
+                        })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">CIN</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      CIN
+                    </label>
                     <input
                       type="text"
                       value={editData.cin}
-                      onChange={(e) => setEditData({...editData, cin: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({ ...editData, cin: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Rôle
+                    </label>
                     <select
                       value={editData.role}
-                      onChange={(e) => setEditData({...editData, role: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({ ...editData, role: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     >
                       <option value="">Sélectionner un rôle</option>
@@ -578,10 +641,14 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                 {/* Colonne 2 */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Grade</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Grade
+                    </label>
                     <select
                       value={editData.grade}
-                      onChange={(e) => setEditData({...editData, grade: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({ ...editData, grade: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     >
                       <option value="">Sélectionner un grade</option>
@@ -592,42 +659,61 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                       ))}
                     </select>
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date de naissance
+                    </label>
                     <input
                       type="date"
                       value={editData.birth_date}
-                      onChange={(e) => setEditData({...editData, birth_date: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({ ...editData, birth_date: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Lieu de naissance</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Lieu de naissance
+                    </label>
                     <input
                       type="text"
                       value={editData.birth_place}
-                      onChange={(e) => setEditData({...editData, birth_place: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          birth_place: e.target.value,
+                        })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Adresse
+                    </label>
                     <input
                       type="text"
                       value={editData.address}
-                      onChange={(e) => setEditData({...editData, address: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({ ...editData, address: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Ligue</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Ligue
+                    </label>
                     <select
                       value={editData.ligue}
-                      onChange={(e) => setEditData({...editData, ligue: e.target.value})}
+                      onChange={(e) =>
+                        setEditData({ ...editData, ligue: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     >
                       <option value="">Sélectionner une ligue</option>
@@ -643,7 +729,7 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex gap-3 mt-8">
                 <button
                   onClick={handleSave}
@@ -666,8 +752,10 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
         {showPhotoOptions && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
             <div className="bg-white rounded-t-2xl p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold mb-4 text-center">Options de photo</h3>
-              
+              <h3 className="text-lg font-semibold mb-4 text-center">
+                Options de photo
+              </h3>
+
               <div className="space-y-3">
                 <button
                   onClick={() => {
@@ -679,10 +767,10 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                   <span>👁️</span>
                   Voir la photo
                 </button>
-                
+
                 <label className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 cursor-pointer">
                   <span>📷</span>
-                  {isUploading ? 'Modification...' : 'Modifier la photo'}
+                  {isUploading ? "Modification..." : "Modifier la photo"}
                   <input
                     type="file"
                     accept="image/*"
@@ -691,7 +779,7 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                     disabled={isUploading}
                   />
                 </label>
-                
+
                 <button
                   onClick={() => setShowPhotoOptions(false)}
                   className="w-full bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors"
@@ -713,17 +801,23 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
               >
                 ✕
               </button>
-              
-              <img
-                src={profile.profile_photo.startsWith('http') 
-                  ? profile.profile_photo 
-                  : `${getBackendUrl()}${profile.profile_photo}`
+
+              <Image
+                src={
+                  profile.profile_photo.startsWith("http")
+                    ? profile.profile_photo
+                    : `${getBackendUrl()}${profile.profile_photo}`
                 }
                 alt="Photo de profil"
+                width={800}
+                height={600}
                 className="max-w-full max-h-full object-contain rounded-lg"
                 onError={() => {
-                  console.error('Erreur de chargement de l\'image en plein écran');
+                  console.error(
+                    "Erreur de chargement de l'image en plein écran"
+                  );
                 }}
+                priority={false}
               />
             </div>
           </div>

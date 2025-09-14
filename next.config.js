@@ -16,10 +16,12 @@ const nextConfig = {
   },
 
   images: {
-    domains: ['localhost', '127.0.0.1', 'federation-mobile-front.vercel.app', 'vercel.app'],
+    domains: ['localhost', '127.0.0.1', 'federation-mobile-front.vercel.app', 'vercel.app', 'federation-backend.onrender.com'],
     remotePatterns: [
       { protocol: 'https', hostname: 'federation-mobile-front.vercel.app', pathname: '/**' },
       { protocol: 'http', hostname: 'localhost', port: '3000', pathname: '/**' },
+      { protocol: 'https', hostname: 'federation-backend.onrender.com', pathname: '/**' },
+      { protocol: 'http', hostname: 'localhost', port: '8000', pathname: '/**' },
     ],
   },
 
@@ -51,6 +53,15 @@ const nextConfig = {
       {
         source: '/favicon.ico',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=86400' }],
+      },
+      // Headers pour les images du backend
+      {
+        source: '/api/media/(.*)',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, HEAD, OPTIONS' },
+          { key: 'Cache-Control', value: 'public, max-age=3600' }
+        ],
       },
     ];
   },
@@ -86,6 +97,11 @@ const nextConfig = {
         {
           source: '/api/notifications/:path*',
           destination: 'http://localhost:8000/api/notifications/:path*',
+        },
+        // Rewrite pour les médias (images/vidéos) en développement
+        {
+          source: '/api/media/:path*',
+          destination: 'http://localhost:8000/api/media/:path*',
         },
       ];
     }

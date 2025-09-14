@@ -48,6 +48,10 @@
     {
       "src": "/api/notifications/(.*)",
       "dest": "https://federation-backend.onrender.com/api/notifications/$1"
+    },
+    {
+      "src": "/api/media/(.*)",
+      "dest": "https://federation-backend.onrender.com/api/media/$1"
     }
   ],
   "env": {
