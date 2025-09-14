@@ -43,7 +43,16 @@ export const verifyPhoneNumber = async (
     // Utiliser la configuration unifiée de l'API
     const { getApiUrl } = await import('../config/api');
 
-    // Appel à l'API de vérification
+    // Appel à l'API de vérification avec timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondes timeout
+
+    console.log('🔍 Vérification du numéro:', {
+      phone: phoneToSend,
+      url: getApiUrl('/accounts/verify-phone/'),
+      timestamp: new Date().toISOString()
+    });
+
     const response = await fetch(getApiUrl('/accounts/verify-phone/'), {
       method: 'POST',
       headers: {
@@ -51,35 +60,56 @@ export const verifyPhoneNumber = async (
       },
       body: JSON.stringify({
         phone_number: phoneToSend
-      })
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    console.log('📡 Réponse API vérification téléphone:', {
+      status: response.status,
+      ok: response.ok,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
     });
 
     if (!response.ok) {
-      let errorMessage = 'Erreur lors de la vérification du numéro';
-      
+      let errorMessage = "Erreur lors de la vérification du numéro";
+
       try {
         const errorData = await response.json();
+        console.error("❌ Erreur API:", errorData);
         errorMessage = errorData.message || errorData.detail || errorMessage;
       } catch {
         if (response.status === 404) {
-          errorMessage = 'Service de vérification non disponible';
+          errorMessage = "Service de vérification non disponible";
         } else if (response.status >= 500) {
-          errorMessage = 'Erreur serveur lors de la vérification';
+          errorMessage = "Erreur serveur lors de la vérification";
         }
       }
-      
+
       return {
         success: false,
         message: errorMessage,
-        error_code: 'API_ERROR'
+        error_code: "API_ERROR",
       };
     }
 
     const data = await response.json();
+    console.log("✅ Données reçues de l'API:", data);
     return data;
 
   } catch (error) {
     console.error('Erreur lors de la vérification du numéro:', error);
+    
+    // Gestion des erreurs de timeout
+    if (error instanceof Error && error.name === 'AbortError') {
+      return {
+        success: false,
+        message: 'Timeout: La vérification a pris trop de temps. Veuillez réessayer.',
+        error_code: 'TIMEOUT_ERROR'
+      };
+    }
     
     // Gestion des erreurs de connexion
     if (error instanceof TypeError && error.message.includes('fetch')) {

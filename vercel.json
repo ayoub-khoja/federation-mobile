@@ -38,6 +38,10 @@
       "dest": "https://federation-backend.onrender.com/api/accounts/arbitres/profile/$1"
     },
     {
+      "src": "/api/accounts/verify-phone/(.*)",
+      "dest": "https://federation-backend.onrender.com/api/accounts/verify-phone/$1"
+    },
+    {
       "src": "/api/arbitres/(.*)",
       "dest": "https://federation-backend.onrender.com/api/arbitres/$1"
     },

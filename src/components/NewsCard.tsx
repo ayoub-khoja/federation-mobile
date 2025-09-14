@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import OptimizedImage from "./OptimizedImage";
 import { NewsItem } from '../services/newsService';
 
 interface NewsCardProps {
@@ -15,25 +16,38 @@ export default function NewsCard({ news, language, isRtl }: NewsCardProps) {
   const [imageError, setImageError] = useState(false);
   const [videoError, setVideoError] = useState(false);
 
-  const title = language === 'ar' ? news.title_ar : news.title_fr;
-  const content = language === 'ar' ? news.content_ar : news.content_fr;
+  const title = language === "ar" ? news.title_ar : news.title_fr;
+  const content = language === "ar" ? news.content_ar : news.content_fr;
 
   // Validation des URLs de médias
   const isValidImageUrl = (url: string | null | undefined): boolean => {
     if (!url) return false;
     try {
       const urlObj = new URL(url, window.location.origin);
-      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+      return urlObj.protocol === "http:" || urlObj.protocol === "https:";
     } catch {
       return false;
     }
+  };
+
+  // Fonction pour obtenir l'URL de l'image avec fallback
+  const getImageUrl = (imageUrl: string | null | undefined): string | null => {
+    if (!imageUrl) return null;
+
+    // Si l'URL commence déjà par http/https, l'utiliser directement
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+      return imageUrl;
+    }
+
+    // Sinon, construire l'URL avec le backend
+    return `${imageUrl}`;
   };
 
   const isValidVideoUrl = (url: string | null | undefined): boolean => {
     if (!url) return false;
     try {
       const urlObj = new URL(url, window.location.origin);
-      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+      return urlObj.protocol === "http:" || urlObj.protocol === "https:";
     } catch {
       return false;
     }
@@ -42,23 +56,23 @@ export default function NewsCard({ news, language, isRtl }: NewsCardProps) {
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      if (isNaN(date.getTime())) return 'Date invalide';
-      
-      return date.toLocaleDateString(language === 'fr' ? 'fr-FR' : 'ar-TN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+      if (isNaN(date.getTime())) return "Date invalide";
+
+      return date.toLocaleDateString(language === "fr" ? "fr-FR" : "ar-TN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     } catch {
-      return 'Date invalide';
+      return "Date invalide";
     }
   };
 
   const truncateContent = (text: string, maxLength = 150) => {
     if (!text || text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+    return text.substring(0, maxLength) + "...";
   };
 
   return (
@@ -89,30 +103,27 @@ export default function NewsCard({ news, language, isRtl }: NewsCardProps) {
         {news.has_media && (
           <div className="mb-4">
             {/* Image */}
-            {news.media_type === "image" &&
-              news.image &&
-              isValidImageUrl(news.image) &&
-              !imageError && (
-                <div className="relative">
-                  <div className="relative w-full h-64 rounded-xl overflow-hidden">
-                    <Image
-                      src={news.image}
-                      alt={title || "Image de l'actualité"}
-                      fill
-                      className="object-cover"
-                      onError={() => setImageError(true)}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      priority={false}
-                    />
-                  </div>
-                  <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm rounded-lg px-2 py-1">
-                    <span className="text-white text-xs flex items-center space-x-1">
-                      <span>🖼️</span>
-                      <span>{language === "fr" ? "Image" : "صورة"}</span>
-                    </span>
-                  </div>
+            {news.media_type === "image" && news.image && !imageError && (
+              <div className="relative">
+                <div className="relative w-full h-64 rounded-xl overflow-hidden">
+                  <OptimizedImage
+                    src={news.image}
+                    alt={title || "Image de l'actualité"}
+                    fill
+                    className="object-cover"
+                    onError={() => setImageError(true)}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority={false}
+                  />
                 </div>
-              )}
+                <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm rounded-lg px-2 py-1">
+                  <span className="text-white text-xs flex items-center space-x-1">
+                    <span>🖼️</span>
+                    <span>{language === "fr" ? "Image" : "صورة"}</span>
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Vidéo */}
             {news.media_type === "video" &&
@@ -148,8 +159,7 @@ export default function NewsCard({ news, language, isRtl }: NewsCardProps) {
               )}
 
             {/* Affichage de fallback en cas d'erreur ou d'URL invalide */}
-            {((news.media_type === "image" &&
-              (!isValidImageUrl(news.image) || imageError)) ||
+            {((news.media_type === "image" && (!news.image || imageError)) ||
               (news.media_type === "video" &&
                 (!isValidVideoUrl(news.video) || videoError))) && (
               <div className="w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center">

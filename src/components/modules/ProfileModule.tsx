@@ -3,26 +3,35 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
-import { useProfile } from '../../hooks/useProfile';
-import { useLigues } from '../../hooks/useLigues';
-import { GRADES } from '../../hooks/useRegistration';
+import OptimizedImage from "../OptimizedImage";
+import { useProfile } from "../../hooks/useProfile";
+import { useLigues } from "../../hooks/useLigues";
+import { GRADES } from "../../hooks/useRegistration";
 
-import { getBackendUrl } from '../../config/config';
+import { getBackendUrl } from "../../config/config";
 
 interface ProfileModuleProps {
   isRtl: boolean;
-  homeT: {[key: string]: string};
+  homeT: { [key: string]: string };
 }
 
 export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
   const router = useRouter();
-  const { profile, isLoading, error, updateProfile, logout, getAge, getFormattedJoinDate } = useProfile();
+  const {
+    profile,
+    isLoading,
+    error,
+    updateProfile,
+    logout,
+    getAge,
+    getFormattedJoinDate,
+  } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showPhotoOptions, setShowPhotoOptions] = useState(false);
   const [showFullImage, setShowFullImage] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  
+
   const [editData, setEditData] = useState<{
     first_name: string;
     last_name: string;
@@ -37,35 +46,34 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
     ligue: string;
     [key: string]: string;
   }>({
-    first_name: '',
-    last_name: '', 
-    email: '',
-    phone_number: '',
-    cin: '',
-    role: '',
-    grade: '',
-    birth_date: '',
-    birth_place: '',
-    address: '',
-    ligue: ''
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+    cin: "",
+    role: "",
+    grade: "",
+    birth_date: "",
+    birth_place: "",
+    address: "",
+    ligue: "",
   });
-
 
   // Initialiser les données d'édition quand le profil est chargé
   React.useEffect(() => {
     if (profile) {
       setEditData({
-        first_name: profile.first_name || '',
-        last_name: profile.last_name || '',
-        email: profile.email || '',
-        phone_number: profile.phone_number || '',
-        cin: (profile as any).cin || '',
-        role: profile.role || '',
-        grade: profile.grade || '',
-        birth_date: profile.birth_date || '',
-        birth_place: profile.birth_place || '',
-        address: profile.address || '',
-        ligue: profile.ligue || ''
+        first_name: profile.first_name || "",
+        last_name: profile.last_name || "",
+        email: profile.email || "",
+        phone_number: profile.phone_number || "",
+        cin: (profile as any).cin || "",
+        role: profile.role || "",
+        grade: profile.grade || "",
+        birth_date: profile.birth_date || "",
+        birth_place: profile.birth_place || "",
+        address: profile.address || "",
+        ligue: profile.ligue || "",
       });
       // Reset l'état d'erreur d'image quand le profil change
       setImageError(false);
@@ -74,94 +82,107 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
 
   const handleSave = async () => {
     try {
-      const accessToken = localStorage.getItem('access_token');
+      const accessToken = localStorage.getItem("access_token");
       if (!accessToken) {
-        alert('Token d\'authentification non trouvé');
+        alert("Token d'authentification non trouvé");
         return;
       }
 
       const formData = new FormData();
-      
+
       // Ajouter tous les champs autorisés
       const allowedFields = [
-        'first_name', 'last_name', 'email', 'address', 'birth_date', 
-        'birth_place', 'cin', 'role', 'grade', 'ligue'
+        "first_name",
+        "last_name",
+        "email",
+        "address",
+        "birth_date",
+        "birth_place",
+        "cin",
+        "role",
+        "grade",
+        "ligue",
       ];
 
-      allowedFields.forEach(field => {
-        if (editData[field] !== undefined && editData[field] !== '') {
+      allowedFields.forEach((field) => {
+        if (editData[field] !== undefined && editData[field] !== "") {
           formData.append(field, editData[field]);
         }
       });
 
       const result = await updateProfileWithPhoto(formData, accessToken);
-      
+
       if (result.success) {
         setIsEditing(false);
         // Recharger le profil pour afficher les nouvelles données
         window.location.reload();
       } else {
-        alert('Erreur lors de la mise à jour du profil');
+        alert("Erreur lors de la mise à jour du profil");
       }
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du profil:', error);
-      alert('Erreur lors de la mise à jour du profil');
+      console.error("Erreur lors de la mise à jour du profil:", error);
+      alert("Erreur lors de la mise à jour du profil");
     }
   };
 
   // Fonction pour mettre à jour le profil avec photo
-  const updateProfileWithPhoto = async (formData: FormData, accessToken: string) => {
-    const response = await fetch('/api/accounts/arbitres/profile/update/', {
-      method: 'PATCH',
+  const updateProfileWithPhoto = async (
+    formData: FormData,
+    accessToken: string
+  ) => {
+    const response = await fetch("/api/accounts/arbitres/profile/update/", {
+      method: "PATCH",
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         // Ne pas définir Content-Type pour FormData
       },
-      body: formData // FormData avec profile_photo
+      body: formData, // FormData avec profile_photo
     });
-    
+
     return response.json();
   };
 
   // Fonction pour gérer le changement de photo
-  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     // Vérifier le type de fichier
-    if (!file.type.startsWith('image/')) {
-      alert('Veuillez sélectionner un fichier image valide');
+    if (!file.type.startsWith("image/")) {
+      alert("Veuillez sélectionner un fichier image valide");
       return;
     }
 
     // Vérifier la taille (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('La taille du fichier ne doit pas dépasser 5MB');
+      alert("La taille du fichier ne doit pas dépasser 5MB");
       return;
     }
 
     setIsUploading(true);
     try {
-      const accessToken = localStorage.getItem('access_token');
+      const accessToken = localStorage.getItem("access_token");
       if (!accessToken) {
-        alert('Token d\'authentification non trouvé');
+        alert("Token d'authentification non trouvé");
         return;
       }
 
       const formData = new FormData();
-      formData.append('profile_photo', file);
+      formData.append("profile_photo", file);
 
       const result = await updateProfileWithPhoto(formData, accessToken);
-      
+
       if (result.success || result.profile_photo) {
         // Recharger le profil pour afficher la nouvelle photo
         window.location.reload();
       } else {
-        alert('Erreur lors de la mise à jour de la photo');
+        alert("Erreur lors de la mise à jour de la photo");
       }
     } catch (error) {
-      console.error('Erreur lors de la mise à jour de la photo:', error);
-      alert('Erreur lors de la mise à jour de la photo');
+      console.error("Erreur lors de la mise à jour de la photo:", error);
+      alert("Erreur lors de la mise à jour de la photo");
     } finally {
       setIsUploading(false);
       setShowPhotoOptions(false);
@@ -171,17 +192,17 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
   const handleCancel = () => {
     if (profile) {
       setEditData({
-        first_name: profile.first_name || '',
-        last_name: profile.last_name || '',
-        email: profile.email || '',
-        phone_number: profile.phone_number || '',
-        cin: (profile as any).cin || '',
-        role: profile.role || '',
-        grade: profile.grade || '',
-        birth_date: profile.birth_date || '',
-        birth_place: profile.birth_place || '',
-        address: profile.address || '',
-        ligue: profile.ligue || ''
+        first_name: profile.first_name || "",
+        last_name: profile.last_name || "",
+        email: profile.email || "",
+        phone_number: profile.phone_number || "",
+        cin: (profile as any).cin || "",
+        role: profile.role || "",
+        grade: profile.grade || "",
+        birth_date: profile.birth_date || "",
+        birth_place: profile.birth_place || "",
+        address: profile.address || "",
+        ligue: profile.ligue || "",
       });
     }
     setIsEditing(false);
@@ -190,24 +211,24 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
   // Fonction pour formater le rôle
   const getRoleDisplay = (role?: string) => {
     switch (role) {
-      case 'arbitre':
-        return 'Arbitre Principal';
-      case 'assistant':
-        return 'Arbitre Assistant';
+      case "arbitre":
+        return "Arbitre Principal";
+      case "assistant":
+        return "Arbitre Assistant";
       default:
-        return role || 'Non défini';
+        return role || "Non défini";
     }
   };
 
   // Fonction pour obtenir la couleur du badge de rôle
   const getRoleBadgeColor = (role?: string) => {
     switch (role) {
-      case 'arbitre':
-        return 'bg-blue-100 text-blue-800';
-      case 'assistant':
-        return 'bg-green-100 text-green-800';
+      case "arbitre":
+        return "bg-blue-100 text-blue-800";
+      case "assistant":
+        return "bg-green-100 text-green-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -234,13 +255,23 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
       <div className="glass rounded-3xl shadow-ftf overflow-hidden animate-fadeInUp">
         <div className="p-6 text-center">
           <div className="text-red-500 mb-4">
-            <svg className="w-16 h-16 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            <svg
+              className="w-16 h-16 mx-auto mb-4"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Erreur de chargement</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            Erreur de chargement
+          </h3>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
@@ -255,10 +286,14 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
     return (
       <div className="glass rounded-3xl shadow-ftf overflow-hidden animate-fadeInUp">
         <div className="p-6 text-center">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Non connecté</h3>
-          <p className="text-gray-600 mb-4">Veuillez vous connecter pour voir votre profil</p>
-          <button 
-            onClick={() => router.push('/')}
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            Non connecté
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Veuillez vous connecter pour voir votre profil
+          </p>
+          <button
+            onClick={() => router.push("/")}
             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
             Se connecter
@@ -295,14 +330,16 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
               <div className="relative">
                 <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center border-4 border-red-200 overflow-hidden">
                   {profile.profile_photo && !imageError ? (
-                    <img
+                    <OptimizedImage
                       src={
                         profile.profile_photo.startsWith("http")
                           ? profile.profile_photo
                           : `${getBackendUrl()}${profile.profile_photo}`
                       }
                       alt="Photo de profil"
-                      className="w-full h-full object-cover"
+                      width={128}
+                      height={128}
+                      className="w-full h-full object-cover rounded-full"
                       onError={() => {
                         console.error(
                           "Erreur de chargement de l'image de profil"
@@ -802,7 +839,7 @@ export default function ProfileModule({ isRtl, homeT }: ProfileModuleProps) {
                 ✕
               </button>
 
-              <Image
+              <OptimizedImage
                 src={
                   profile.profile_photo.startsWith("http")
                     ? profile.profile_photo

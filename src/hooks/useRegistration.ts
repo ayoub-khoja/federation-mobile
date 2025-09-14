@@ -111,7 +111,12 @@ export const useRegistration = () => {
     setPhoneVerification(prev => ({ ...prev, isVerifying: true }));
 
     try {
+      console.log(
+        "🔍 Hook useRegistration - Vérification du numéro:",
+        phoneNumber
+      );
       const result = await verifyPhoneNumber(phoneNumber);
+      console.log("📡 Hook useRegistration - Résultat:", result);
       
       if (result.success) {
         setPhoneVerification({
@@ -129,6 +134,7 @@ export const useRegistration = () => {
         });
       }
     } catch (error) {
+      console.error("❌ Hook useRegistration - Erreur:", error);
       setPhoneVerification({
         isVerifying: false,
         isVerified: false,

@@ -16,13 +16,24 @@ const nextConfig = {
   },
 
   images: {
-    domains: ['localhost', '127.0.0.1', 'federation-mobile-front.vercel.app', 'vercel.app', 'federation-backend.onrender.com'],
+    domains: [
+      'localhost', 
+      '127.0.0.1', 
+      'federation-mobile-front.vercel.app', 
+      'federation-admin-front.vercel.app',
+      'vercel.app', 
+      'federation-backend.onrender.com'
+    ],
     remotePatterns: [
       { protocol: 'https', hostname: 'federation-mobile-front.vercel.app', pathname: '/**' },
+      { protocol: 'https', hostname: 'federation-admin-front.vercel.app', pathname: '/**' },
       { protocol: 'http', hostname: 'localhost', port: '3000', pathname: '/**' },
       { protocol: 'https', hostname: 'federation-backend.onrender.com', pathname: '/**' },
       { protocol: 'http', hostname: 'localhost', port: '8000', pathname: '/**' },
     ],
+    unoptimized: false,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   // ⚠️ Laisse Next gérer splitChunks/hashFunction
@@ -60,7 +71,17 @@ const nextConfig = {
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
           { key: 'Access-Control-Allow-Methods', value: 'GET, HEAD, OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
           { key: 'Cache-Control', value: 'public, max-age=3600' }
+        ],
+      },
+      // Headers pour les images Next.js optimisées
+      {
+        source: '/_next/image(.*)',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, HEAD, OPTIONS' },
+          { key: 'Cache-Control', value: 'public, max-age=86400, immutable' }
         ],
       },
     ];
@@ -85,6 +106,10 @@ const nextConfig = {
         {
           source: '/api/accounts/arbitres/profile/:path*',
           destination: 'http://localhost:8000/api/accounts/arbitres/profile/:path*',
+        },
+        {
+          source: '/api/accounts/verify-phone/:path*',
+          destination: 'http://localhost:8000/api/accounts/verify-phone/:path*',
         },
         {
           source: '/api/arbitres/:path*',
